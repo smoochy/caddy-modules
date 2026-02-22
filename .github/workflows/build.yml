@@ -1,0 +1,525 @@
+name: Build Caddy with additional modules
+
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - Dockerfile*
+      - .dockerignore
+      - .github/workflows/build.yml
+
+
+  schedule:
+    - cron: "00 3 * * *" # daily 03:00 UTC
+
+
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force build even if no upstream changes are detected"
+        required: false
+        default: "false"
+
+
+permissions:
+  contents: read
+  packages: write
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup crane
+        uses: imjasonh/setup-crane@v0.4
+
+
+      - name: Decide whether to build (caddy OR cloudflare) + build reason
+        id: decide
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+
+          IMAGE="ghcr.io/${{ github.repository }}:latest"
+
+          GH_API="https://api.github.com"
+          AUTH_HEADER="Authorization: Bearer ${GITHUB_TOKEN}"
+
+          # Always compute "selected" versions/digest for this run
+          CADDY_BASE="caddy:latest"
+          CADDY_DIGEST="$(crane digest "$CADDY_BASE")"
+
+          # Get caddy base config to extract version
+          CADDY_CFG="$(crane config "$CADDY_BASE")"
+          CADDY_TAG_RAW="$(echo "$CADDY_CFG" | jq -r '.config.Labels["org.opencontainers.image.version"] // .config.Labels["org.label-schema.version"] // ""')"
+          CADDY_TAG="${CADDY_TAG_RAW#v}"
+
+          is_semver() { [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; }
+
+          # If we couldn't get version from labels, try to extract from History/cmd
+          if ! is_semver "$CADDY_TAG"; then
+            CADDY_TAG=""
+            # Try to extract from entrypoint or other command info
+            histstr="$(echo "$CADDY_CFG" | jq -r '.history[0].created_by // ""')"
+            # If it contains a version, extract it
+            if [[ "$histstr" =~ ([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+              CADDY_TAG="${BASH_REMATCH[1]}"
+            fi
+          fi
+
+          # If still empty, default to latest (caddy:latest)
+          if [ -z "$CADDY_TAG" ]; then
+            CADDY_TAG="latest"
+          fi
+
+          echo "caddy_tag=$CADDY_TAG" >> "$GITHUB_OUTPUT"
+          echo "caddy_digest=$CADDY_DIGEST" >> "$GITHUB_OUTPUT"
+
+          # Parse Dockerfile to extract all --with addons (excluding commented lines)
+          declare -a ADDONS=()
+          while IFS= read -r line; do
+            # Skip commented lines and empty lines
+            if [[ "$line" =~ ^[[:space:]]*# ]] || [[ -z "$line" ]]; then
+              continue
+            fi
+            # Extract addon name from --with lines
+            # Match pattern: --with followed by whitespace, then capture everything until space/backslash
+            if [[ "$line" =~ --with[[:space:]]+([^[:space:]\\]+) ]]; then
+              addon="${BASH_REMATCH[1]}"
+              if [ ! -z "$addon" ] && [ "$addon" != "null" ]; then
+                ADDONS+=("$addon")
+              fi
+            fi
+          done < <(grep -- '--with' Dockerfile)
+
+          # Helper function to fetch addon version and release notes
+          fetch_addon_version() {
+            local addon="$1"
+            local owner_repo="${addon#github.com/}"
+            owner_repo="${owner_repo%@*}"  # Remove any @version suffix
+            
+            local version=""
+            local tag=""
+            local release_notes=""
+            local release_url=""
+
+            # Try to get release with tag
+            local releases_response="$(curl -fsSL -H "$AUTH_HEADER" -H "Accept: application/vnd.github+json" \
+              "${GH_API}/repos/${owner_repo}/releases?per_page=10" 2>/dev/null || echo "")"
+            
+            # Get first stable release (filter out null values)
+            tag="$(echo "$releases_response" | jq -r '.[] | select(.prerelease == false) | .tag_name // empty' 2>/dev/null | head -1)"
+            
+            # Fallback to tags if no stable release
+            if [ -z "$tag" ]; then
+              local tags_response="$(curl -fsSL -H "$AUTH_HEADER" -H "Accept: application/vnd.github+json" \
+                "${GH_API}/repos/${owner_repo}/tags" 2>/dev/null || echo "")"
+              tag="$(echo "$tags_response" | jq -r '.[0].name // empty' 2>/dev/null)"
+            fi
+
+            # Fallback: if still no tag, use the latest commit SHA (short) from the default branch
+            if [ -z "$tag" ]; then
+              local repo_info="$(curl -fsSL -H "$AUTH_HEADER" -H "Accept: application/vnd.github+json" \
+                "${GH_API}/repos/${owner_repo}" 2>/dev/null || echo "")"
+              local default_branch="$(echo "$repo_info" | jq -r '.default_branch // "main"' 2>/dev/null || echo "main")"
+              local repo_exists="$(echo "$repo_info" | jq -r '.full_name' 2>/dev/null || echo "")"
+              if [ ! -z "$repo_exists" ]; then
+                # Fetch latest commit SHA and message on the default branch
+                local commit_resp="$(curl -fsSL -H "$AUTH_HEADER" -H "Accept: application/vnd.github+json" \
+                  "${GH_API}/repos/${owner_repo}/commits/${default_branch}" 2>/dev/null || echo "")"
+                local commit_sha="$(echo "$commit_resp" | jq -r '.sha // ""' 2>/dev/null || echo "")"
+                if [ ! -z "$commit_sha" ]; then
+                  tag="${commit_sha:0:7}"  # Use short SHA (7 chars)
+                  # Also grab the commit message as "release notes"
+                  local commit_msg="$(echo "$commit_resp" | jq -r '.commit.message // ""' 2>/dev/null || echo "")"
+                  if [ ! -z "$commit_msg" ]; then
+                    release_notes="$commit_msg"
+                  fi
+                else
+                  tag="unknown"
+                fi
+              fi
+            fi
+
+            version="${tag#v}"
+            if [ ! -z "$tag" ] && [ "$tag" != "unknown" ]; then
+              # Check if this tag looks like a short commit SHA (7 hex chars, no dots)
+              if [[ "$tag" =~ ^[0-9a-f]{7}$ ]]; then
+                # It's a commit SHA — link to the commit page
+                release_url="https://github.com/${owner_repo}/commit/${tag}"
+              else
+                release_url="https://github.com/${owner_repo}/releases/tag/${tag}"
+
+                # Fetch release notes
+                release_body="$(curl -fsSL -H "$AUTH_HEADER" -H "Accept: application/vnd.github+json" \
+                  "${GH_API}/repos/${owner_repo}/releases/tags/${tag}" 2>/dev/null | jq -r '.body // ""' || echo "")"
+                if [ ! -z "$release_body" ]; then
+                  release_notes="$release_body"
+                fi
+              fi
+
+            else
+              # For repos without releases/tags
+              release_url="https://github.com/${owner_repo}"
+            fi
+
+            # Escape newlines so the pipe-delimited output stays on one line
+            local release_notes_escaped="${release_notes//$'\n'/\\n}"
+            echo "${version}|${release_url}|${release_notes_escaped}"
+          }
+
+          # Fetch versions and notes for all addons
+          declare -a ADDON_VERSIONS=()
+          declare -a ADDON_URLS=()
+          declare -a ADDON_NOTES=()
+
+          for addon in "${ADDONS[@]}"; do
+            addon_data="$(fetch_addon_version "$addon")"
+            version=""
+            url=""
+            notes=""
+            # addon_data is a single line: version|url|escaped-notes
+            IFS='|' read -r version url notes <<<"$addon_data"
+            # Unescape newlines in notes
+            notes="${notes//\\n/$'\n'}"
+            # Filter out null values
+            version="${version//null/unknown}"
+            url="${url//null/}"
+            notes="${notes//null/}"
+            ADDON_VERSIONS+=("${version:-unknown}")
+            ADDON_URLS+=("${url:-}")
+            ADDON_NOTES+=("${notes:-}")
+          done
+
+          # Store addon info in outputs
+          for i in "${!ADDONS[@]}"; do
+            addon_name="addon_${i}_name"
+            addon_ver="addon_${i}_version"
+            addon_url="addon_${i}_url"
+            addon_notes="addon_${i}_notes"
+            
+            echo "${addon_name}=${ADDONS[$i]}" >> "$GITHUB_OUTPUT"
+            ver_val="${ADDON_VERSIONS[$i]}"
+            ver_val="${ver_val//null/unknown}"
+            echo "${addon_ver}=${ver_val:-unknown}" >> "$GITHUB_OUTPUT"
+            echo "${addon_url}=${ADDON_URLS[$i]}" >> "$GITHUB_OUTPUT"
+            
+            # Use simpler format for multiline notes
+            notes_val="${ADDON_NOTES[$i]}"
+            notes_val="${notes_val//$'\n'/\\n}"  # Escape newlines
+            echo "${addon_notes}=${notes_val}" >> "$GITHUB_OUTPUT"
+          done
+
+          # Generate addon labels string for Build and push step
+          # Store each addon as a separate output for easier processing
+          for i in "${!ADDONS[@]}"; do
+            echo "addon_${i}_label_name=org.opencontainers.image.addon.${i}.name=${ADDONS[$i]}" >> "$GITHUB_OUTPUT"
+            echo "addon_${i}_label_version=org.opencontainers.image.addon.${i}.version=${ADDON_VERSIONS[$i]}" >> "$GITHUB_OUTPUT"
+          done
+
+          # Store addon count
+          echo "addon_count=${#ADDONS[@]}" >> "$GITHUB_OUTPUT"
+
+          # For backward compatibility: also extract cloudflare specifically
+          CF_VERSION="${ADDON_VERSIONS[0]:-unknown}"
+          CF_VERSION="${CF_VERSION//null/unknown}"
+          CF_RELEASE_URL="${ADDON_URLS[0]:-https://github.com/caddy-dns/cloudflare/releases}"
+          CF_RELEASE_URL="${CF_RELEASE_URL//null/https://github.com/caddy-dns/cloudflare/releases}"
+
+          echo "cloudflare_version=$CF_VERSION" >> "$GITHUB_OUTPUT"
+          echo "cf_release_url=$CF_RELEASE_URL" >> "$GITHUB_OUTPUT"
+
+          # Fetch Caddy release notes
+          CADDY_RELEASE_NOTES=""
+          if [ "$CADDY_TAG" != "latest" ]; then
+            CADDY_RELEASE_BODY="$(curl -fsSL -H "$AUTH_HEADER" -H "Accept: application/vnd.github+json" \
+              "${GH_API}/repos/caddyserver/caddy/releases/tags/v${CADDY_TAG}" 2>/dev/null | jq -r '.body // ""' || echo "")"
+            if [ ! -z "$CADDY_RELEASE_BODY" ]; then
+              CADDY_RELEASE_NOTES="$CADDY_RELEASE_BODY"
+            fi
+          fi
+
+          # Escape newlines in release notes
+          CADDY_RELEASE_NOTES="${CADDY_RELEASE_NOTES//$'\n'/\\n}"
+          echo "caddy_release_notes=${CADDY_RELEASE_NOTES}" >> "$GITHUB_OUTPUT"
+
+          # Read "current" versions/digest from the published image (if it exists)
+          CURRENT_CADDY_DIGEST=""
+          CURRENT_CADDY_TAG=""
+          CURRENT_CF_VERSION=""
+          declare -a CURRENT_ADDON_VERSIONS=()
+
+          if crane manifest "$IMAGE" >/dev/null 2>&1; then
+            cfg="$(crane config "$IMAGE")"
+            CURRENT_CADDY_DIGEST="$(echo "$cfg" | jq -r '.config.Labels["org.opencontainers.image.base.digest"] // ""')"
+            CURRENT_CADDY_TAG="$(echo "$cfg" | jq -r '.config.Labels["org.opencontainers.image.base.version"] // ""')"
+            CURRENT_CF_VERSION="$(echo "$cfg" | jq -r '.config.Labels["org.opencontainers.image.cloudflare.version"] // ""')"
+            
+            # Fetch all addon versions from labels
+            for i in "${!ADDONS[@]}"; do
+              addon_label_key="org.opencontainers.image.addon.${i}.version"
+              addon_ver="$(echo "$cfg" | jq -r ".config.Labels[\"${addon_label_key}\"] // \"\"" 2>/dev/null || echo "")"
+              CURRENT_ADDON_VERSIONS+=("$addon_ver")
+            done
+          fi
+
+          # Keep these as outputs (handy for debugging / future reuse)
+          echo "current_caddy_digest=$CURRENT_CADDY_DIGEST" >> "$GITHUB_OUTPUT"
+          echo "current_caddy_tag=$CURRENT_CADDY_TAG" >> "$GITHUB_OUTPUT"
+          echo "current_cf_version=$CURRENT_CF_VERSION" >> "$GITHUB_OUTPUT"
+          
+          for i in "${!CURRENT_ADDON_VERSIONS[@]}"; do
+            echo "current_addon_${i}_version=${CURRENT_ADDON_VERSIONS[$i]}" >> "$GITHUB_OUTPUT"
+          done
+
+          # Determine forced build conditions
+          FORCED="false"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            FORCED="true"
+          fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.force }}" = "true" ]; then
+            FORCED="true"
+          fi
+
+          # Detect upstream changes
+          CHANGED="false"
+          reasons=()
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "$FORCED" = "true" ]; then
+              reasons+=("Manual trigger (forced build)")
+            else
+              reasons+=("Manual trigger")
+            fi
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            reasons+=("Repository push (Dockerfile/workflow change possible)")
+          elif [ "${{ github.event_name }}" = "schedule" ]; then
+            reasons+=("Scheduled upstream check")
+          fi
+
+          if [ -z "$CURRENT_CADDY_DIGEST" ] || [ "$CURRENT_CADDY_DIGEST" != "$CADDY_DIGEST" ]; then
+            CHANGED="true"
+            CURR_HEX="${CURRENT_CADDY_DIGEST#*:}"
+            NEW_HEX="${CADDY_DIGEST#*:}"
+            CURR_SHORT="sha256:${CURR_HEX:0:7}"
+            NEW_SHORT="sha256:${NEW_HEX:0:7}"
+            CURR_LABEL="${CURR_SHORT:-<none>}"
+            reasons+=("caddy:latest base changed: \`${CURR_LABEL}\` -> \`${NEW_SHORT}\`")
+          fi
+
+          if [ "$CURRENT_CF_VERSION" != "$CF_VERSION" ]; then
+            CHANGED="true"
+            CURR_CF_SHORT="${CURRENT_CF_VERSION:0:7}"
+            NEW_CF_SHORT="${CF_VERSION:0:7}"
+            CURR_CF_LABEL="${CURR_CF_SHORT:-<none>}"
+            reasons+=("Cloudflare module updated: \`${CURR_CF_LABEL}\` -> \`${NEW_CF_SHORT}\` ([release notes](${CF_RELEASE_URL}))")
+          fi
+
+          # Final decision
+          if [ "$FORCED" = "true" ] || [ "$CHANGED" = "true" ]; then
+            echo "do_build=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "do_build=false" >> "$GITHUB_OUTPUT"
+            reasons+=("No upstream changes detected (caddy/cloudflare unchanged)")
+          fi
+
+          # Helper: rewrite relative GitHub refs to absolute URLs for a given owner/repo
+          linkify_notes() {
+            local notes="$1"
+            local repo="$2"  # e.g. caddyserver/caddy
+            echo "$notes" \
+              | sed -E "s,#([0-9]+),[#\1](https://github.com/${repo}/issues/\1),g" \
+              | sed -E "s,(^|[[:space:]])([0-9a-f]{7})([0-9a-f]{33})([[:space:]]|$),\1[\`\2\`](https://github.com/${repo}/commit/\2\3)\4,g"
+          }
+
+          # Write markdown summary directly to a temp file (avoids shell interpolation of backticks/$ in release notes)
+          {
+            bt='`'  # backtick helper for code spans in Markdown output
+            echo "### Publish reason:"
+            printf '%s\n' "${reasons[@]}" | sed 's/^/- /'
+            echo ""
+            echo "### Selected versions (this run):"
+            CADDY_DIGEST_HEX="${CADDY_DIGEST#*:}"
+            CADDY_DIGEST_SHORT="sha256:${CADDY_DIGEST_HEX:0:7}"
+            echo "- caddy digest: \`${CADDY_DIGEST_SHORT}\`"
+            if is_semver "$CADDY_TAG"; then
+              echo "- caddy: \`${CADDY_TAG}\` ([GitHub tag](https://github.com/caddyserver/caddy/releases/tag/v${CADDY_TAG}))"
+            else
+              echo "- caddy: \`${CADDY_TAG}\`"
+            fi
+
+            echo ""
+            echo "### Addons:"
+
+            # Pass 1: list all addons (name + version + link only)
+            for i in "${!ADDONS[@]}"; do
+              addon_name="${ADDONS[$i]}"
+              addon_version="${ADDON_VERSIONS[$i]}"
+              addon_url="${ADDON_URLS[$i]}"
+
+              if [ -z "$addon_name" ]; then continue; fi
+              if [ "$addon_version" = "null" ] || [ -z "$addon_version" ]; then addon_version="unknown"; fi
+
+              echo -n "- $addon_name: ${bt}${addon_version}${bt}"
+              if [ ! -z "$addon_url" ] && [ "$addon_url" != "null" ]; then
+                if [[ "$addon_url" =~ /releases/tag/ ]]; then
+                  echo " ([release](${addon_url}))"
+                elif [[ "$addon_url" =~ /commit/ ]]; then
+                  repo_url="${addon_url%/commit/*}"
+                  echo " ([repo](${repo_url})) ([commit](${addon_url}))"
+                else
+                  echo " ([repo](${addon_url}))"
+                fi
+              else
+                echo ""
+              fi
+            done
+            echo ""
+
+            # Pass 2: ### Changelogs — Caddy first, then each addon, all collapsible
+            HAS_ANY_CHANGELOG=false
+            if [ ! -z "$CADDY_RELEASE_NOTES" ] && [ "$CADDY_RELEASE_NOTES" != "null" ]; then
+              HAS_ANY_CHANGELOG=true
+            fi
+            for i in "${!ADDONS[@]}"; do
+              notes="${ADDON_NOTES[$i]}"
+              if [ ! -z "$notes" ] && [ "$notes" != "null" ]; then HAS_ANY_CHANGELOG=true; fi
+            done
+
+            if [ "$HAS_ANY_CHANGELOG" = "true" ]; then
+              echo "### Changelogs"
+              echo ""
+
+              # Caddy changelog
+              if [ ! -z "$CADDY_RELEASE_NOTES" ] && [ "$CADDY_RELEASE_NOTES" != "null" ]; then
+                CADDY_RELEASE_NOTES="${CADDY_RELEASE_NOTES//\\n/$'\n'}"
+                echo "<details><summary>caddy <code>${CADDY_TAG}</code></summary>"
+                echo ""
+                linkify_notes "$CADDY_RELEASE_NOTES" "caddyserver/caddy" | sed 's/^/> /'
+                echo ""
+                echo "</details>"
+                echo ""
+              fi
+
+              # Addon changelogs
+              for i in "${!ADDONS[@]}"; do
+                addon_name="${ADDONS[$i]}"
+                addon_notes="${ADDON_NOTES[$i]}"
+                if [ ! -z "$addon_notes" ] && [ "$addon_notes" != "null" ]; then
+                  addon_repo="${addon_name#github.com/}"
+                  addon_repo="${addon_repo%@*}"
+                  addon_version_label="${ADDON_VERSIONS[$i]}"
+                  echo "<details><summary>${addon_name} <code>${addon_version_label}</code></summary>"
+                  echo ""
+                  linkify_notes "$addon_notes" "$addon_repo" | sed 's/^/> /'
+                  echo ""
+                  echo "</details>"
+                  echo ""
+                fi
+              done
+            fi
+
+          } > /tmp/summary.md
+
+      - name: Metadata
+        if: steps.decide.outputs.do_build == 'true'
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value=caddy-${{ steps.decide.outputs.caddy_tag }}
+
+      - name: Prepare addon labels
+        if: steps.decide.outputs.do_build == 'true'
+        id: addon_labels
+        shell: bash
+        env:
+          ADDON_COUNT: ${{ steps.decide.outputs.addon_count }}
+        run: |
+          set -uo pipefail
+          labels=""
+          addon_count="${ADDON_COUNT:-0}"
+          # Ensure addon_count is a valid number
+          if ! [[ "$addon_count" =~ ^[0-9]+$ ]]; then
+            addon_count=0
+          fi
+
+          # Read addon name/version directly from $GITHUB_OUTPUT file (dynamic, no hardcoded slots)
+          for i in $(seq 0 $((addon_count - 1))); do
+            name="$(grep "^addon_${i}_name=" "$GITHUB_OUTPUT" 2>/dev/null | tail -1 | cut -d= -f2- || true)"
+            version="$(grep "^addon_${i}_version=" "$GITHUB_OUTPUT" 2>/dev/null | tail -1 | cut -d= -f2- || true)"
+
+            # Filter null values
+            name="${name//null/}"
+            version="${version//null/unknown}"
+
+            if [ ! -z "$name" ]; then
+              labels+="org.opencontainers.image.addon.${i}.name=${name}"$'\n'
+              labels+="org.opencontainers.image.addon.${i}.version=${version:-unknown}"$'\n'
+            fi
+          done
+
+          echo "labels<<LABELSOF" >> "$GITHUB_OUTPUT"
+          printf '%s' "$labels" >> "$GITHUB_OUTPUT"
+          echo "LABELSOF" >> "$GITHUB_OUTPUT"
+
+
+      - name: Build and push
+        if: steps.decide.outputs.do_build == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: |
+            ${{ steps.meta.outputs.labels }}
+            org.opencontainers.image.base.name=caddy:latest
+            org.opencontainers.image.base.tag=${{ steps.decide.outputs.caddy_tag }}
+            org.opencontainers.image.base.digest=${{ steps.decide.outputs.caddy_digest }}
+            org.opencontainers.image.base.version=${{ steps.decide.outputs.caddy_tag }}
+            org.opencontainers.image.cloudflare.version=${{ steps.decide.outputs.cloudflare_version }}
+            ${{ steps.addon_labels.outputs.labels }}
+            org.opencontainers.image.description=Caddy with addon modules (auto rebuild on upstream updates)
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+
+      - name: Write build summary
+        if: always()
+        shell: bash
+        run: |
+          # Cat the pre-rendered markdown file (no shell interpolation of release note content)
+          if [ -f /tmp/summary.md ]; then
+            cat /tmp/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+          printf '\n### Image Tags\n' >> "$GITHUB_STEP_SUMMARY"
+          printf -- '- `ghcr.io/${{ github.repository }}:latest`\n' >> "$GITHUB_STEP_SUMMARY"
+          printf -- '- `ghcr.io/${{ github.repository }}:caddy-${{ steps.decide.outputs.caddy_tag }}`\n' >> "$GITHUB_STEP_SUMMARY"

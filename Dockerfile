@@ -1,0 +1,21 @@
+# Build stage
+FROM caddy:builder AS builder
+
+# Build Caddy with the Cloudflare DNS module
+RUN xcaddy build \
+    --with github.com/caddy-dns/cloudflare \
+    --with github.com/WeidiDeng/caddy-cloudflare-ip \
+    --with github.com/fvbommel/caddy-combine-ip-ranges
+
+# Final stage
+FROM caddy:latest
+
+# Copy the custom-built Caddy binary
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+
+LABEL org.opencontainers.image.title="Caddy with additional modules"
+LABEL org.opencontainers.image.description="Caddy web server image with several additional modules baked in"
+LABEL org.opencontainers.image.url=https://caddyserver.com
+LABEL org.opencontainers.image.documentation=https://caddyserver.com/docs
+LABEL org.opencontainers.image.licenses=MIT
+LABEL org.opencontainers.image.source="https://github.com/smoochy/caddy-modules"
