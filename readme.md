@@ -10,7 +10,7 @@ with a curated set of modules compiled in via
 [`xcaddy`](https://github.com/caddyserver/xcaddy).
 
 The CI rebuilds the image **only when necessary** and writes a Job Summary that
-explains *why* a build happened (including links to upstream release notes).
+explains _why_ a build happened (including links to upstream release notes).
 
 ---
 
@@ -62,7 +62,7 @@ keeps the image up to date automatically.
 
 The workflow is triggered in three ways:
 
-1. **Push to `main`**, but *only* when one of these files changes:
+1. **Push to `main`**, but _only_ when one of these files changes:
    - `Dockerfile*`
    - `.dockerignore`
    - `.github/workflows/build.yml`
@@ -154,11 +154,11 @@ This image is published with:
 
 ## Included addons
 
-| Addon | Purpose |
-|---|---|
-| [`caddy-dns/cloudflare`](https://github.com/caddy-dns/cloudflare) | DNS-01 ACME challenge provider for Cloudflare |
-| [`WeidiDeng/caddy-cloudflare-ip`](https://github.com/WeidiDeng/caddy-cloudflare-ip) | Provides the real client IP when behind Cloudflare proxy |
-| [`fvbommel/caddy-combine-ip-ranges`](https://github.com/fvbommel/caddy-combine-ip-ranges) | Combines multiple IP range sources for trusted proxies |
+| Addon                                                                                     | Purpose                                                  |
+| ----------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| [`caddy-dns/cloudflare`](https://github.com/caddy-dns/cloudflare)                         | DNS-01 ACME challenge provider for Cloudflare            |
+| [`WeidiDeng/caddy-cloudflare-ip`](https://github.com/WeidiDeng/caddy-cloudflare-ip)       | Provides the real client IP when behind Cloudflare proxy |
+| [`fvbommel/caddy-combine-ip-ranges`](https://github.com/fvbommel/caddy-combine-ip-ranges) | Combines multiple IP range sources for trusted proxies   |
 
 ---
 
@@ -189,6 +189,20 @@ Commented-out `--with` lines are fully ignored.
 ```bash
 docker pull ghcr.io/smoochy/caddy-modules:latest
 ```
+
+> [!TIP]
+> For reproducible and tamper-proof deployments it is recommended to pin the
+> image using both a version tag **and** its digest:
+>
+> ```text
+> ghcr.io/smoochy/caddy-modules:caddy-<x.y.z>@sha256:<digest>
+> ```
+>
+> This guarantees that the exact same image is pulled every time, even if the
+> tag is later overwritten. The digest of every published image is visible in
+> the [GitHub Actions Job Summary](https://github.com/smoochy/caddy-modules/actions)
+> and in the
+> [GHCR package page](https://github.com/smoochy/caddy-modules/pkgs/container/caddy-modules).
 
 Example `docker-compose.yml`:
 
