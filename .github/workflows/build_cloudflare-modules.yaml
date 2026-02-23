@@ -1,18 +1,15 @@
 name: Build Caddy with additional modules
 
-
 on:
   push:
     branches: ["main"]
     paths:
-      - Dockerfile*
+      - Dockerfile-cloudflare
       - .dockerignore
-      - .github/workflows/build.yml
-
+      - .github/workflows/build_cloudflare-modules.yaml
 
   schedule:
     - cron: "00 3 * * *" # daily 03:00 UTC
-
 
   workflow_dispatch:
     inputs:
@@ -21,16 +18,13 @@ on:
         required: false
         default: "false"
 
-
 permissions:
   contents: read
   packages: write
 
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 
 jobs:
   build:
@@ -55,7 +49,6 @@ jobs:
       - name: Setup crane
         uses: imjasonh/setup-crane@v0.4
 
-
       - name: Decide whether to build (caddy OR cloudflare) + build reason
         id: decide
         shell: bash
@@ -64,7 +57,7 @@ jobs:
         run: |
           set -uo pipefail
 
-          IMAGE="ghcr.io/${{ github.repository }}:latest"
+          IMAGE="ghcr.io/smoochy/caddy-cloudflare-modules:latest"
 
           GH_API="https://api.github.com"
           AUTH_HEADER="Authorization: Bearer ${GITHUB_TOKEN}"
@@ -291,7 +284,7 @@ jobs:
           echo "current_caddy_digest=$CURRENT_CADDY_DIGEST" >> "$GITHUB_OUTPUT"
           echo "current_caddy_tag=$CURRENT_CADDY_TAG" >> "$GITHUB_OUTPUT"
           echo "current_cf_version=$CURRENT_CF_VERSION" >> "$GITHUB_OUTPUT"
-          
+
           for i in "${!CURRENT_ADDON_VERSIONS[@]}"; do
             echo "current_addon_${i}_version=${CURRENT_ADDON_VERSIONS[$i]}" >> "$GITHUB_OUTPUT"
           done
@@ -450,7 +443,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ghcr.io/smoochy/caddy-cloudflare-modules
           tags: |
             type=raw,value=latest
             type=raw,value=caddy-${{ steps.decide.outputs.caddy_tag }}
@@ -489,13 +482,12 @@ jobs:
           printf '%s' "$labels" >> "$GITHUB_OUTPUT"
           echo "LABELSOF" >> "$GITHUB_OUTPUT"
 
-
       - name: Build and push
         if: steps.decide.outputs.do_build == 'true'
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile-cloudflare
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -507,10 +499,9 @@ jobs:
             org.opencontainers.image.base.version=${{ steps.decide.outputs.caddy_tag }}
             org.opencontainers.image.cloudflare.version=${{ steps.decide.outputs.cloudflare_version }}
             ${{ steps.addon_labels.outputs.labels }}
-            org.opencontainers.image.description=Caddy with addon modules (auto rebuild on upstream updates)
+            org.opencontainers.image.description=Caddy with Cloudflare modules (auto rebuild on upstream updates)
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
 
       - name: Write build summary
         if: always()
@@ -521,5 +512,5 @@ jobs:
             cat /tmp/summary.md >> "$GITHUB_STEP_SUMMARY"
           fi
           printf '\n### Image Tags\n' >> "$GITHUB_STEP_SUMMARY"
-          printf -- '- `ghcr.io/${{ github.repository }}:latest`\n' >> "$GITHUB_STEP_SUMMARY"
-          printf -- '- `ghcr.io/${{ github.repository }}:caddy-${{ steps.decide.outputs.caddy_tag }}`\n' >> "$GITHUB_STEP_SUMMARY"
+          printf -- '- `ghcr.io/smoochy/caddy-cloudflare-modules:latest`\n' >> "$GITHUB_STEP_SUMMARY"
+          printf -- '- `ghcr.io/smoochy/caddy-cloudflare-modules:caddy-${{ steps.decide.outputs.caddy_tag }}`\n' >> "$GITHUB_STEP_SUMMARY"

@@ -1,16 +1,18 @@
 # caddy-modules
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-[![Build](https://github.com/smoochy/caddy-modules/actions/workflows/build.yml/badge.svg)](https://github.com/smoochy/caddy-modules/actions)
+[![Build](https://github.com/smoochy/caddy-modules/actions/workflows/build_cloudflare-modules.yaml/badge.svg)](https://github.com/smoochy/caddy-modules/actions)
 
-> Custom **[Caddy](https://github.com/caddyserver/caddy)** image with useful addons, automatically rebuilt when upstream components change.
+> A collection of custom **[Caddy](https://github.com/caddyserver/caddy)** images with curated module sets, automatically rebuilt when upstream components change.
 
-This repository builds and publishes a Docker image based on `caddy:latest`,
-with a curated set of modules compiled in via
+This repository builds and publishes custom Docker images based on `caddy:latest`,
+each compiled with a specific set of modules via
 [`xcaddy`](https://github.com/caddyserver/xcaddy).
 
-The CI rebuilds the image **only when necessary** and writes a Job Summary that
-explains _why_ a build happened (including links to upstream release notes).
+Each image variant has its own `Dockerfile-*` and
+`.github/workflows/build_*.yaml`. The CI rebuilds images **only when necessary**
+and writes a Job Summary explaining _why_ a build happened (including links to
+upstream release notes).
 
 ---
 
@@ -19,15 +21,16 @@ explains _why_ a build happened (including links to upstream release notes).
 - [caddy-modules](#caddy-modules)
   - [Table of Contents](#table-of-contents)
   - [Background](#background)
-  - [What this repository does](#what-this-repository-does)
+  - [Available images](#available-images)
+  - [Cloudflare image](#cloudflare-image)
   - [When builds run](#when-builds-run)
   - [Dockerfile](#dockerfile)
   - [GitHub Actions workflow](#github-actions-workflow)
   - [Job Summary](#job-summary)
   - [Image metadata](#image-metadata)
   - [Image tags](#image-tags)
-  - [Included addons](#included-addons)
   - [Adding more addons](#adding-more-addons)
+  - [Adding a new image variant](#adding-a-new-image-variant)
   - [Usage](#usage)
   - [Security](#security)
   - [Maintainers](#maintainers)
@@ -38,22 +41,41 @@ explains _why_ a build happened (including links to upstream release notes).
 ## Background
 
 The official Caddy Docker image does not include third-party modules. This
-project compiles Caddy with a curated set of Cloudflare-related modules and
-keeps the image up to date automatically.
+repository provides a framework for building and maintaining multiple custom
+Caddy images, each compiled with a specific set of modules, and keeps them
+up to date automatically.
 
 ---
 
-## What this repository does
+## Available images
 
-- Builds a custom Docker image:
+| Image                                                                                                          | Dockerfile              | Workflow                        | Description                 |
+| -------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------------------- | --------------------------- |
+| [`caddy-cloudflare-modules`](https://github.com/smoochy/caddy-modules/pkgs/container/caddy-cloudflare-modules) | `Dockerfile-cloudflare` | `build_cloudflare-modules.yaml` | Cloudflare DNS + IP modules |
+
+> Additional variants can be added at any time — see [Adding a new image variant](#adding-a-new-image-variant).
+
+### caddy-cloudflare-modules
+
+| Addon                                                                                     | Purpose                                                  |
+| ----------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| [`caddy-dns/cloudflare`](https://github.com/caddy-dns/cloudflare)                         | DNS-01 ACME challenge provider for Cloudflare            |
+| [`WeidiDeng/caddy-cloudflare-ip`](https://github.com/WeidiDeng/caddy-cloudflare-ip)       | Provides the real client IP when behind Cloudflare proxy |
+| [`fvbommel/caddy-combine-ip-ranges`](https://github.com/fvbommel/caddy-combine-ip-ranges) | Combines multiple IP range sources for trusted proxies   |
+
+---
+
+## Cloudflare image
+
+- Builds a custom Docker image `caddy-cloudflare-modules`:
   - Base: `caddy:latest`
   - Compiled with:
     - `github.com/caddy-dns/cloudflare` — DNS-01 ACME challenge provider
     - `github.com/WeidiDeng/caddy-cloudflare-ip` — real client IP behind Cloudflare
     - `github.com/fvbommel/caddy-combine-ip-ranges` — combines trusted IP range sources
 - Publishes the image to **GitHub Container Registry (GHCR)**:
-  - `ghcr.io/smoochy/caddy-modules:latest`
-  - `ghcr.io/smoochy/caddy-modules:caddy-<x.y.z>`
+  - `ghcr.io/smoochy/caddy-cloudflare-modules:latest`
+  - `ghcr.io/smoochy/caddy-cloudflare-modules:caddy-<x.y.z>`
 - Tracks upstream updates and rebuilds only when needed.
 
 ---
@@ -65,7 +87,7 @@ The workflow is triggered in three ways:
 1. **Push to `main`**, but _only_ when one of these files changes:
    - `Dockerfile*`
    - `.dockerignore`
-   - `.github/workflows/build.yml`
+   - `.github/workflows/build_*.yaml`
 
    This prevents rebuilds for documentation-only changes (e.g. `README.md`).
 
@@ -96,7 +118,7 @@ The `Dockerfile`:
 
 ## GitHub Actions workflow
 
-`build.yml` does the following:
+`build_*.yaml` does the following:
 
 1. Logs into GHCR and sets up Buildx + QEMU
 2. Parses the Dockerfile to discover all active addons (`--with` lines)
@@ -152,19 +174,11 @@ This image is published with:
 
 ---
 
-## Included addons
-
-| Addon                                                                                     | Purpose                                                  |
-| ----------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| [`caddy-dns/cloudflare`](https://github.com/caddy-dns/cloudflare)                         | DNS-01 ACME challenge provider for Cloudflare            |
-| [`WeidiDeng/caddy-cloudflare-ip`](https://github.com/WeidiDeng/caddy-cloudflare-ip)       | Provides the real client IP when behind Cloudflare proxy |
-| [`fvbommel/caddy-combine-ip-ranges`](https://github.com/fvbommel/caddy-combine-ip-ranges) | Combines multiple IP range sources for trusted proxies   |
-
 ---
 
 ## Adding more addons
 
-To include any additional Caddy module, add a `--with` line to the `Dockerfile`:
+To include any additional Caddy module, add a `--with` line to the `Dockerfile-cloudflare`:
 
 ```dockerfile
 RUN xcaddy build \
@@ -184,10 +198,29 @@ Commented-out `--with` lines are fully ignored.
 
 ---
 
+## Adding a new image variant
+
+Each image variant is self-contained and consists of exactly two files:
+
+| File                                  | Purpose                                     |
+| ------------------------------------- | ------------------------------------------- |
+| `Dockerfile-<name>`                   | Defines the modules compiled into the image |
+| `.github/workflows/build_<name>.yaml` | Builds, tags, and publishes the image       |
+
+To add a new variant:
+
+1. Copy `Dockerfile-cloudflare` → `Dockerfile-<name>` and adjust the `--with` lines.
+2. Copy `.github/workflows/build_cloudflare-modules.yaml` → `.github/workflows/build_<name>.yaml`.
+3. In the new workflow file, update the hardcoded image name (three occurrences of `ghcr.io/smoochy/caddy-cloudflare-modules`) to `ghcr.io/smoochy/caddy-<name>`.
+4. Update the `file:` reference from `Dockerfile-cloudflare` to `Dockerfile-<name>`.
+5. Add a row to the [Available images](#available-images) table above.
+
+---
+
 ## Usage
 
 ```bash
-docker pull ghcr.io/smoochy/caddy-modules:latest
+docker pull ghcr.io/smoochy/caddy-cloudflare-modules:latest
 ```
 
 > [!TIP]
@@ -195,21 +228,21 @@ docker pull ghcr.io/smoochy/caddy-modules:latest
 > image using both a version tag **and** its digest:
 >
 > ```text
-> ghcr.io/smoochy/caddy-modules:caddy-<x.y.z>@sha256:<digest>
+> ghcr.io/smoochy/caddy-cloudflare-modules:caddy-<x.y.z>@sha256:<digest>
 > ```
 >
 > This guarantees that the exact same image is pulled every time, even if the
 > tag is later overwritten. The digest of every published image is visible in
 > the [GitHub Actions Job Summary](https://github.com/smoochy/caddy-modules/actions)
 > and in the
-> [GHCR package page](https://github.com/smoochy/caddy-modules/pkgs/container/caddy-modules).
+> [GHCR package page](https://github.com/smoochy/caddy-modules/pkgs/container/caddy-cloudflare-modules).
 
 Example `docker-compose.yml`:
 
 ```yaml
 services:
   caddy:
-    image: ghcr.io/smoochy/caddy-modules:latest
+    image: ghcr.io/smoochy/caddy-cloudflare-modules:latest
     restart: unless-stopped
     ports:
       - "80:80"
