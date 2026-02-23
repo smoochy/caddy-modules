@@ -1,4 +1,4 @@
-name: Build Caddy with additional modules
+name: Build Caddy with Cloudflare modules
 
 on:
   push:
