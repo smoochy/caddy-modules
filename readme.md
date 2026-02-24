@@ -62,6 +62,7 @@ up to date automatically.
 | [`caddy-dns/cloudflare`](https://github.com/caddy-dns/cloudflare)                         | DNS-01 ACME challenge provider for Cloudflare            |
 | [`WeidiDeng/caddy-cloudflare-ip`](https://github.com/WeidiDeng/caddy-cloudflare-ip)       | Provides the real client IP when behind Cloudflare proxy |
 | [`fvbommel/caddy-combine-ip-ranges`](https://github.com/fvbommel/caddy-combine-ip-ranges) | Combines multiple IP range sources for trusted proxies   |
+| [`lucaslorentz/caddy-docker-proxy`](https://github.com/lucaslorentz/caddy-docker-proxy)   | Automatic Caddy configuration via Docker labels          |
 
 ---
 
@@ -73,6 +74,7 @@ up to date automatically.
     - `github.com/caddy-dns/cloudflare` — DNS-01 ACME challenge provider
     - `github.com/WeidiDeng/caddy-cloudflare-ip` — real client IP behind Cloudflare
     - `github.com/fvbommel/caddy-combine-ip-ranges` — combines trusted IP range sources
+    - `github.com/lucaslorentz/caddy-docker-proxy` — automatic config via Docker labels
 - Publishes the image to **GitHub Container Registry (GHCR)**:
   - `ghcr.io/smoochy/caddy-cloudflare-modules:latest`
   - `ghcr.io/smoochy/caddy-cloudflare-modules:caddy-<x.y.z>`
@@ -185,6 +187,7 @@ RUN xcaddy build \
     --with github.com/caddy-dns/cloudflare \
     --with github.com/WeidiDeng/caddy-cloudflare-ip \
     --with github.com/fvbommel/caddy-combine-ip-ranges \
+    --with github.com/lucaslorentz/caddy-docker-proxy \
     --with github.com/your-org/your-caddy-addon
 ```
 
