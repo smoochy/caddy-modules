@@ -107,7 +107,7 @@ jobs:
                 ADDONS+=("$addon")
               fi
             fi
-          done < <(grep -- '--with' Dockerfile)
+          done < <(grep -- '--with' Dockerfile-cloudflare)
 
           # Helper function to fetch addon version and release notes
           fetch_addon_version() {
