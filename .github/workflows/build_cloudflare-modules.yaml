@@ -114,6 +114,8 @@ jobs:
             local addon="$1"
             local owner_repo="${addon#github.com/}"
             owner_repo="${owner_repo%@*}"  # Remove any @version suffix
+            # Strip Go major version path suffix (e.g. /v2, /v3) — Go convention, not part of the GitHub repo path
+            owner_repo="$(echo "$owner_repo" | sed -E 's|/v[0-9]+$||')"
             
             local version=""
             local tag=""
