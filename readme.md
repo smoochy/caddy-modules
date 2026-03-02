@@ -3,6 +3,8 @@
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![Build](https://github.com/smoochy/caddy-modules/actions/workflows/build_cloudflare-modules.yaml/badge.svg)](https://github.com/smoochy/caddy-modules/actions)
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/smoochy)
+
 > A collection of custom **[Caddy](https://github.com/caddyserver/caddy)** images with curated module sets, automatically rebuilt when upstream components change.
 
 This repository builds and publishes custom Docker images based on `caddy:latest`,
@@ -22,6 +24,7 @@ upstream release notes).
   - [Table of Contents](#table-of-contents)
   - [Background](#background)
   - [Available images](#available-images)
+    - [caddy-cloudflare-modules](#caddy-cloudflare-modules)
   - [Cloudflare image](#cloudflare-image)
   - [When builds run](#when-builds-run)
   - [Dockerfile](#dockerfile)
