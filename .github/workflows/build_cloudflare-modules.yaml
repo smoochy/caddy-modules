@@ -8,6 +8,13 @@ on:
       - .dockerignore
       - .github/workflows/build_cloudflare-modules.yaml
 
+  pull_request:
+    branches: ["main"]
+    paths:
+      - Dockerfile-cloudflare
+      - .dockerignore
+      - .github/workflows/build_cloudflare-modules.yaml
+
   schedule:
     - cron: "00 3 * * *" # daily 03:00 UTC
 
@@ -32,6 +39,50 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Classify local changes
+        id: local_changes
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+          PUSH_SHA: ${{ github.sha }}
+          WORKFLOW_PATH: .github/workflows/build_cloudflare-modules.yaml
+        run: |
+          set -euo pipefail
+
+          image_inputs_changed=false
+          workflow_changed=false
+          changed_files=""
+          compare_from=""
+          compare_to=""
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            compare_from="$PR_BASE_SHA"
+            compare_to="$PR_HEAD_SHA"
+          elif [ "$EVENT_NAME" = "push" ]; then
+            compare_from="$PUSH_BEFORE_SHA"
+            compare_to="$PUSH_SHA"
+          fi
+
+          if [ -n "$compare_from" ] && [ -n "$compare_to" ] && [ "$compare_from" != "0000000000000000000000000000000000000000" ]; then
+            changed_files="$(git diff --name-only "$compare_from" "$compare_to" || true)"
+          fi
+
+          if printf '%s\n' "$changed_files" | grep -Eq '^(Dockerfile[^/]*|\.dockerignore)$'; then
+            image_inputs_changed=true
+          fi
+
+          if printf '%s\n' "$changed_files" | grep -Fxq "$WORKFLOW_PATH"; then
+            workflow_changed=true
+          fi
+
+          echo "image_inputs_changed=$image_inputs_changed" >> "$GITHUB_OUTPUT"
+          echo "workflow_changed=$workflow_changed" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -40,6 +91,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Login to GHCR
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -133,7 +185,7 @@ jobs:
             owner_repo="${owner_repo%@*}"  # Remove any @version suffix
             # Strip Go major version path suffix (e.g. /v2, /v3) — Go convention, not part of the GitHub repo path
             owner_repo="$(echo "$owner_repo" | sed -E 's|/v[0-9]+$||')"
-            
+
             local version=""
             local tag=""
             local release_notes=""
@@ -142,10 +194,10 @@ jobs:
             # Try to get release with tag
             local releases_response="$(curl -fsSL -H "$AUTH_HEADER" -H "Accept: application/vnd.github+json" \
               "${GH_API}/repos/${owner_repo}/releases?per_page=10" 2>/dev/null || echo "")"
-            
+
             # Get first stable release (filter out null values)
             tag="$(echo "$releases_response" | jq -r '.[] | select(.prerelease == false) | .tag_name // empty' 2>/dev/null | head -1)"
-            
+
             # Fallback to tags if no stable release
             if [ -z "$tag" ]; then
               local tags_response="$(curl -fsSL -H "$AUTH_HEADER" -H "Accept: application/vnd.github+json" \
@@ -233,13 +285,13 @@ jobs:
             addon_ver="addon_${i}_version"
             addon_url="addon_${i}_url"
             addon_notes="addon_${i}_notes"
-            
+
             echo "${addon_name}=${ADDONS[$i]}" >> "$GITHUB_OUTPUT"
             ver_val="${ADDON_VERSIONS[$i]}"
             ver_val="${ver_val//null/unknown}"
             echo "${addon_ver}=${ver_val:-unknown}" >> "$GITHUB_OUTPUT"
             echo "${addon_url}=${ADDON_URLS[$i]}" >> "$GITHUB_OUTPUT"
-            
+
             # Use simpler format for multiline notes
             notes_val="${ADDON_NOTES[$i]}"
             notes_val="${notes_val//$'\n'/\\n}"  # Escape newlines
@@ -290,7 +342,7 @@ jobs:
             CURRENT_CADDY_DIGEST="$(echo "$cfg" | jq -r '.config.Labels["org.opencontainers.image.base.digest"] // ""')"
             CURRENT_CADDY_TAG="$(echo "$cfg" | jq -r '.config.Labels["org.opencontainers.image.base.version"] // ""')"
             CURRENT_CF_VERSION="$(echo "$cfg" | jq -r '.config.Labels["org.opencontainers.image.cloudflare.version"] // ""')"
-            
+
             # Fetch all addon versions from labels
             for i in "${!ADDONS[@]}"; do
               addon_label_key="org.opencontainers.image.addon.${i}.version"
@@ -310,10 +362,13 @@ jobs:
 
           # Determine forced build conditions
           FORCED="false"
-          if [ "${{ github.event_name }}" = "push" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.force }}" = "true" ]; then
             FORCED="true"
           fi
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.force }}" = "true" ]; then
+          if [ "${{ github.event_name }}" = "pull_request" ] && { [ "${{ steps.local_changes.outputs.image_inputs_changed }}" = "true" ] || [ "${{ steps.local_changes.outputs.workflow_changed }}" = "true" ]; }; then
+            FORCED="true"
+          fi
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ steps.local_changes.outputs.image_inputs_changed }}" = "true" ]; then
             FORCED="true"
           fi
 
@@ -327,8 +382,26 @@ jobs:
             else
               reasons+=("Manual trigger")
             fi
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            if [ "${{ steps.local_changes.outputs.image_inputs_changed }}" = "true" ] && [ "${{ steps.local_changes.outputs.workflow_changed }}" = "true" ]; then
+              reasons+=("Pull request validation for image input and workflow changes")
+            elif [ "${{ steps.local_changes.outputs.image_inputs_changed }}" = "true" ]; then
+              reasons+=("Pull request validation for local image input changes")
+            elif [ "${{ steps.local_changes.outputs.workflow_changed }}" = "true" ]; then
+              reasons+=("Pull request validation for workflow changes")
+            else
+              reasons+=("Pull request validation")
+            fi
           elif [ "${{ github.event_name }}" = "push" ]; then
-            reasons+=("Repository push (Dockerfile/workflow change possible)")
+            if [ "${{ steps.local_changes.outputs.image_inputs_changed }}" = "true" ] && [ "${{ steps.local_changes.outputs.workflow_changed }}" = "true" ]; then
+              reasons+=("Repository push changed local image inputs and workflow")
+            elif [ "${{ steps.local_changes.outputs.image_inputs_changed }}" = "true" ]; then
+              reasons+=("Repository push changed local image inputs")
+            elif [ "${{ steps.local_changes.outputs.workflow_changed }}" = "true" ]; then
+              reasons+=("Workflow changed, but no image input changed; publish skipped unless upstream changed")
+            else
+              reasons+=("Repository push")
+            fi
           elif [ "${{ github.event_name }}" = "schedule" ]; then
             reasons+=("Scheduled upstream check")
           fi
@@ -508,7 +581,7 @@ jobs:
           context: .
           file: ./Dockerfile-cloudflare
           platforms: linux/amd64,linux/arm64,linux/arm/v7
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: |
             ${{ steps.meta.outputs.labels }}
@@ -523,14 +596,14 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Login to Docker Hub
-        if: steps.decide.outputs.do_build == 'true' && steps.registries.outputs.dockerhub_enabled == 'true'
+        if: steps.decide.outputs.do_build == 'true' && github.event_name != 'pull_request' && steps.registries.outputs.dockerhub_enabled == 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Mirror image to Docker Hub
-        if: steps.decide.outputs.do_build == 'true' && steps.registries.outputs.dockerhub_enabled == 'true'
+        if: steps.decide.outputs.do_build == 'true' && github.event_name != 'pull_request' && steps.registries.outputs.dockerhub_enabled == 'true'
         id: dockerhub_mirror
         shell: bash
         env:
@@ -555,10 +628,16 @@ jobs:
             cat /tmp/summary.md >> "$GITHUB_STEP_SUMMARY"
           fi
           printf '\n### Image Tags\n' >> "$GITHUB_STEP_SUMMARY"
-          printf -- '- `ghcr.io/smoochy/caddy-cloudflare-modules:latest`\n' >> "$GITHUB_STEP_SUMMARY"
-          printf -- '- `ghcr.io/smoochy/caddy-cloudflare-modules:caddy-${{ steps.decide.outputs.caddy_tag }}`\n' >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            printf -- '- Validation build only. No image was pushed.\n' >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf -- '- `ghcr.io/smoochy/caddy-cloudflare-modules:latest`\n' >> "$GITHUB_STEP_SUMMARY"
+            printf -- '- `ghcr.io/smoochy/caddy-cloudflare-modules:caddy-${{ steps.decide.outputs.caddy_tag }}`\n' >> "$GITHUB_STEP_SUMMARY"
+          fi
           printf '\n### Docker Hub Mirror\n' >> "$GITHUB_STEP_SUMMARY"
-          if [ "${{ steps.registries.outputs.dockerhub_enabled }}" != "true" ]; then
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            printf -- '- Skipped for pull request validation.\n' >> "$GITHUB_STEP_SUMMARY"
+          elif [ "${{ steps.registries.outputs.dockerhub_enabled }}" != "true" ]; then
             printf -- '- Skipped: set `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` repository secrets to enable Docker Hub publishing.\n' >> "$GITHUB_STEP_SUMMARY"
           elif [ "${{ steps.decide.outputs.do_build }}" != "true" ]; then
             printf -- '- No image build was required, so Docker Hub was not updated.\n' >> "$GITHUB_STEP_SUMMARY"
