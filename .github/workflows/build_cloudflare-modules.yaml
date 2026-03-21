@@ -533,7 +533,7 @@ jobs:
       - name: Metadata
         if: steps.decide.outputs.do_build == 'true'
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ghcr.io/smoochy/caddy-cloudflare-modules
           tags: |
