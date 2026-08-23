@@ -45,7 +45,7 @@ Ran sequentially, alone. The parallel-wave flag is off by default and was not se
 
 ### Wave 2 - Package 2
 
-Pending at the time of this wave-1 commit.
+Ran sequentially, alone, after wave 1. Same reasoning as wave 1: no shared-artifact trigger fired, so the sequencing is the content dependency described above rather than a fallback.
 
 ## Per package
 
@@ -59,16 +59,45 @@ Pending at the time of this wave-1 commit.
 
 ### Package 2
 
-Pending at the time of this wave-1 commit.
+- **Builder**: `mech-executor` (no security trigger). Status DONE, commit `90758fa`.
+- **Inspector A, fresh `verifier`**: CONFIRMED, all five parts of the acceptance claim plus the mandatory style constraints, no em dash or en dash in any added line and no hard-wrapped added line. It also cross-checked the documented tag set against the workflow's actual tag-emitting sites and found them identical, including the suppression case.
+- **Inspector B, `executor` in read-only correctness and simplification posture**: no findings at any severity. It searched both README files exhaustively for further tag enumerations, pull commands, compose examples and pinning examples, and found none still naming only the old two-tag set.
+- **Fix rounds**: 0.
+- **Scope check**: the wave diff touches exactly `README.md` and `README.dockerhub.md`, which is the union of the wave's declared file scopes. No out-of-scope write.
+
+## Brief reread against the package list
+
+Every point of the brief is assigned, and no package is moot.
+
+| Point of the brief | Package | State |
+| --- | --- | --- |
+| The releases run on `caddy-<version>`, for example `caddy-2.11.4`. | Package 1, acceptance claim 5 | Statement of the existing state rather than a change. Held: the existing tag is unchanged in name, count and ordering. |
+| From now on the tagging used upstream must be included as well. | Package 1, acceptance claims 2 to 4 | Done. Published to GHCR, mirrored to Docker Hub, printed in the build summary. |
+| So that, for example, `caddy-v2.11.4` exists as an image version. | Package 1, acceptance claim 2 | Done, with `caddy-vlatest` proven unreachable. |
+| So it can be used for image pinning. | Package 2, acceptance claim 3 | Done. The "Install" section pins either version tag shape together with a digest. |
+| So it is synchronous with upstream. | Package 2, acceptance claims 1, 2 and 4 | Done. The documentation names the new form as the one matching the upstream release tag name, in all four places that enumerate tags. |
+
+## The final whole-branch review
+
+Dispatched on the most capable model over the three-commit branch diff, under the `superpowers:requesting-code-review` reviewer contract, with the two deferred items handed to it for triage.
+
+- **Critical**: none.
+- **Important, one finding**: the run record committed after wave 1 still said wave 2 was pending, while the branch's last commit finished wave 2, so the committed process record contradicted the code beside it. Addressed by this commit, which folds the wave-2 record into the branch. This is the line's own record layer, so the controller owns it; no implementer fix dispatch was needed and none was made.
+- **Minor, two findings**: the generated `openwiki/` index is stale until its own biweekly refresh runs (carried into the follow-ups below); and the repository has no `CHANGELOG.md`, so the global changelog rule does not apply here, noted only so the absence is not read as an omission.
+- **Triage of the two deferred items**: neither is merge-blocking. The static-only verification reuses a guard idiom the existing `caddy-<x.y.z>` tag already proves in production, and workflow changes are not locally executable by nature. The missing backfill is an explicit recorded non-goal with a real operator escape hatch.
+- **Verdict**: ready to merge with the Important finding fixed.
 
 ## Decide-and-log entries
 
-None yet. No conflict, no ambiguity and no cap event has required a ruling inside the run window so far.
+None. No conflict, no ambiguity, no plan defect and no cap event required a ruling inside the run window. Both packages passed both inspectors on the first round, so the fix loop never opened and the breaker never came into play.
 
 ## Ingest status per store
 
-Reported at run close.
+- **mengram**: `checkpoint` called once after wave 1 and accepted. The unconditional final call is made at run close.
+- **ADR store (`manage_adr`)**: written once at run close through get, merge in memory, update.
 
 ## Findings outside the packages
 
-- **Finding**: the workflow only pushes when `do_build` is true, so the new tag does not appear for the currently published version until the next real upstream change. The operator can publish it immediately by running the workflow through `workflow_dispatch` with `force=true`. This is existing behaviour that the current `caddy-<x.y.z>` tag already lives with, not a defect introduced by this run. Proposed under the cluster **"publishing the new tag for the current version"**.
+- **Finding 1**: the workflow only pushes when `do_build` is true, so the new tag does not appear for the currently published version until the next real upstream change. The operator can publish it immediately by running the workflow through `workflow_dispatch` with `force=true`. This is existing behaviour that the current `caddy-<x.y.z>` tag already lives with, not a defect introduced by this run. Proposed under the cluster **"publishing the new tag for the current version"**.
+- **Finding 0**: the generated `openwiki/` index is stale against the new behaviour. `openwiki/operations/image-tags.md` and `openwiki/workflows/build-pipeline.md` both declare the build workflow as a source path and still say the build publishes two tags. The refresh is owned by `.github/workflows/openwiki-update.yaml`, which runs on even ISO weeks, so it will correct itself without a hand edit; the current week is odd, which leaves a drift window of about two weeks. Raised by the final whole-branch review as a Minor. Proposed under the cluster **"post-merge publication steps"**.
+- **Finding 2**: the workflow cannot be executed locally, so every verification in this run is static: a YAML parse, `shellcheck` on extracted `run:` block bodies, and a manual trace of both `caddy_tag` values through each touched site. Nothing exercised a live Actions run, a real `crane copy` or a real `docker/metadata-action` invocation. Both inspectors of package 1 stated this caveat independently. Proposed under the cluster **"the workflow has no executable verification path"**.
