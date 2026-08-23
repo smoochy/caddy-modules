@@ -594,7 +594,7 @@ jobs:
             ${{ steps.addon_labels.outputs.labels }}
             org.opencontainers.image.description=Caddy with Cloudflare modules (auto rebuild on upstream updates)
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: ${{ github.event_name != 'pull_request' && 'type=gha,mode=max' || '' }}
 
       - name: Login to Docker Hub
         if: steps.decide.outputs.do_build == 'true' && github.event_name != 'pull_request' && steps.registries.outputs.dockerhub_enabled == 'true'
