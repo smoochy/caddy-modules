@@ -28,6 +28,7 @@ docker pull smoochy84/caddy-cloudflare-modules:latest
 
 - `latest`
 - `caddy-<x.y.z>`
+- `caddy-v<x.y.z>`
 
 ## Why this image
 
