@@ -28,6 +28,7 @@ maintenance via Coindrop, Ko-fi, or Buy Me a Coffee.
 - [When Builds Run](#when-builds-run)
 - [Dockerfile](#dockerfile)
 - [GitHub Actions Workflow](#github-actions-workflow)
+- [Workflow Verification](#workflow-verification)
 - [Job Summary](#job-summary)
 - [Image Metadata](#image-metadata)
 - [Image Tags](#image-tags)
@@ -127,6 +128,26 @@ Commented-out `--with` lines are ignored by both the build and the workflow.
    - a push-triggered run happens
    - an upstream change is detected
    - a manual run is forced
+
+## Workflow Verification
+
+This section states what is checked when a change to `build_cloudflare-modules.yaml` runs, and what is not checked before merge.
+
+A pull request build runs the workflow with `push: false`, so the image is built but never published to GHCR or Docker Hub. This exercises the Dockerfile and the addon install steps without any write to a registry.
+
+On a pull request, when `do_build` is `true`, the `Assert produced tag set` step reads the tag list `docker/metadata-action` produced and fails the job unless that set matches exactly what is expected for the `caddy_tag` value the `decide` step emitted. The comparison is by set membership plus a count, so it does not depend on order or formatting. This step never runs on `push`, `schedule`, or `workflow_dispatch`, so it can never fail a publishing build. When `do_build` is `false`, both the `meta` step and this assertion step are skipped.
+
+A change to this workflow is expected to pass these static checks locally before review:
+
+- Parse the whole workflow file with a YAML parser and confirm it succeeds.
+- Extract the body of every `run:` block you changed to a temporary file and run `shellcheck` on it.
+- Copy the shell logic you changed to a temporary file, replace the workflow expressions with shell variables, and execute it against every value the producing step can emit. For the tag logic that means both shapes of `caddy_tag`: a three-part semver such as `2.11.4`, and the literal string `latest`.
+
+The workflow also runs on a schedule, daily at 03:00 UTC, and on every push to `main`. Those are the runs where a real multi-arch push to GHCR and a real `crane copy` mirror to Docker Hub actually execute.
+
+What is not verified before a merge: a real multi-arch push, a real `crane copy` to Docker Hub, and a real write to either registry. A pull request never publishes, so those three paths are first exercised after the merge, on the next push to `main` or on the next scheduled run.
+
+`act` was considered for local verification of this workflow and rejected. The `decide` step calls `crane` against `caddy:latest` and the GitHub API for release metadata, so a local `act` run is not hermetic. `act` also cannot reproduce the multi-arch `docker/build-push-action` push or the `crane copy` mirror, which is exactly the part no static check covers, so it would not close that gap. What a local `act` run would actually prove is that the YAML parses and the shell branches execute, and `shellcheck` plus the pull request tag assertion already prove that more cheaply and in the place that gates a merge. Against that, `act` costs a Docker-in-Docker setup in a repository that has no other local toolchain.
 
 ## Job Summary
 
