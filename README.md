@@ -72,9 +72,11 @@ Additional variants can be added at any time. See
   - GHCR (canonical):
     - `ghcr.io/smoochy/caddy-cloudflare-modules:latest`
     - `ghcr.io/smoochy/caddy-cloudflare-modules:caddy-<x.y.z>`
+    - `ghcr.io/smoochy/caddy-cloudflare-modules:caddy-v<x.y.z>`
   - Docker Hub (public mirror):
     - `smoochy84/caddy-cloudflare-modules:latest`
     - `smoochy84/caddy-cloudflare-modules:caddy-<x.y.z>`
+    - `smoochy84/caddy-cloudflare-modules:caddy-v<x.y.z>`
 - Tracks upstream updates and rebuilds only when needed
 
 ## When Builds Run
@@ -155,8 +157,8 @@ detection, for example:
 This image is published with:
 
 - `latest`: always points to the newest build
-- `caddy-<x.y.z>`: matches the Caddy base version used at build time and is
-  useful for reproducible deployments pinned to a specific Caddy release
+- `caddy-<x.y.z>`: matches the Caddy base version used at build time and is useful for reproducible deployments pinned to a specific Caddy release
+- `caddy-v<x.y.z>`: the same version, matching the upstream Caddy release tag name (for example `v2.11.4`), so pinning by it is synchronous with upstream
 
 ## Install
 
@@ -170,10 +172,11 @@ docker pull ghcr.io/smoochy/caddy-cloudflare-modules:latest
 docker pull smoochy84/caddy-cloudflare-modules:latest
 ```
 
-For reproducible deployments, pin both a version tag and digest:
+For reproducible deployments, pin both a version tag and digest, using either version tag shape:
 
 ```text
 ghcr.io/smoochy/caddy-cloudflare-modules:caddy-<x.y.z>@sha256:<digest>
+ghcr.io/smoochy/caddy-cloudflare-modules:caddy-v<x.y.z>@sha256:<digest>
 ```
 
 The digest of every published image is visible in the

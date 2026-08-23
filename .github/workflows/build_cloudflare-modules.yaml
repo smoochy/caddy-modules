@@ -539,6 +539,7 @@ jobs:
           tags: |
             type=raw,value=latest
             type=raw,value=caddy-${{ steps.decide.outputs.caddy_tag }}
+            type=raw,value=caddy-v${{ steps.decide.outputs.caddy_tag }},enable=${{ steps.decide.outputs.caddy_tag != 'latest' }}
 
       - name: Prepare addon labels
         if: steps.decide.outputs.do_build == 'true'
@@ -619,6 +620,10 @@ jobs:
             crane copy "${src_base}:${tag}" "${dst_base}:${tag}"
           done
 
+          if [ "${CADDY_TAG}" != "latest" ]; then
+            crane copy "${src_base}:caddy-v${CADDY_TAG}" "${dst_base}:caddy-v${CADDY_TAG}"
+          fi
+
       - name: Write build summary
         if: always()
         shell: bash
@@ -633,6 +638,9 @@ jobs:
           else
             printf -- '- `ghcr.io/smoochy/caddy-cloudflare-modules:latest`\n' >> "$GITHUB_STEP_SUMMARY"
             printf -- '- `ghcr.io/smoochy/caddy-cloudflare-modules:caddy-${{ steps.decide.outputs.caddy_tag }}`\n' >> "$GITHUB_STEP_SUMMARY"
+            if [ "${{ steps.decide.outputs.caddy_tag }}" != "latest" ]; then
+              printf -- '- `ghcr.io/smoochy/caddy-cloudflare-modules:caddy-v${{ steps.decide.outputs.caddy_tag }}`\n' >> "$GITHUB_STEP_SUMMARY"
+            fi
           fi
           printf '\n### Docker Hub Mirror\n' >> "$GITHUB_STEP_SUMMARY"
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -644,6 +652,9 @@ jobs:
           elif [ "${{ steps.dockerhub_mirror.outcome }}" = "success" ]; then
             printf -- '- `smoochy84/caddy-cloudflare-modules:latest`\n' >> "$GITHUB_STEP_SUMMARY"
             printf -- '- `smoochy84/caddy-cloudflare-modules:caddy-${{ steps.decide.outputs.caddy_tag }}`\n' >> "$GITHUB_STEP_SUMMARY"
+            if [ "${{ steps.decide.outputs.caddy_tag }}" != "latest" ]; then
+              printf -- '- `smoochy84/caddy-cloudflare-modules:caddy-v${{ steps.decide.outputs.caddy_tag }}`\n' >> "$GITHUB_STEP_SUMMARY"
+            fi
           else
             printf -- '- Mirror was attempted but did not complete successfully.\n' >> "$GITHUB_STEP_SUMMARY"
           fi
