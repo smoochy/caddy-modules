@@ -19,7 +19,7 @@ A pull request validates the image build in a few minutes instead of about 30. T
 
 ## Work packages
 
-### Package 1 - pull-request builds only `linux/amd64`
+### Task 1 - Package 1 - pull-request builds only `linux/amd64`
 
 **Outcome:** the `Build and push` step builds a single platform on `pull_request` and the full three-platform set on every other event.
 
@@ -37,7 +37,7 @@ platforms: ${{ github.event_name == 'pull_request' && 'linux/amd64' || 'linux/am
 
 **Acceptance claim:** on a `pull_request` event the `Build and push` step receives `platforms: linux/amd64`; on `push`, `schedule` and `workflow_dispatch` it receives `platforms: linux/amd64,linux/arm64,linux/arm/v7`. The workflow file still parses as valid YAML and `actionlint` reports no new error.
 
-### Package 2 - pull-request runs read the build cache but never write it
+### Task 2 - Package 2 - pull-request runs read the build cache but never write it
 
 **Outcome:** a pull-request run restores from the GitHub Actions cache as before, and stops exporting a cache entry that no later run can use.
 
