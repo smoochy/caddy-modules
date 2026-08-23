@@ -541,6 +541,52 @@ jobs:
             type=raw,value=caddy-${{ steps.decide.outputs.caddy_tag }}
             type=raw,value=caddy-v${{ steps.decide.outputs.caddy_tag }},enable=${{ steps.decide.outputs.caddy_tag != 'latest' }}
 
+      - name: Assert produced tag set
+        if: github.event_name == 'pull_request' && steps.decide.outputs.do_build == 'true'
+        shell: bash
+        env:
+          META_TAGS: ${{ steps.meta.outputs.tags }}
+          CADDY_TAG: ${{ steps.decide.outputs.caddy_tag }}
+        run: |
+          set -euo pipefail
+
+          declare -a expected=()
+          if [ "$CADDY_TAG" = "latest" ]; then
+            expected=("latest" "caddy-latest")
+          else
+            expected=("latest" "caddy-${CADDY_TAG}" "caddy-v${CADDY_TAG}")
+          fi
+
+          declare -a produced=()
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            produced+=("${line##*:}")
+          done <<< "$META_TAGS"
+
+          ok=true
+          if [ "${#produced[@]}" -ne "${#expected[@]}" ]; then
+            ok=false
+          fi
+          for tag in "${expected[@]}"; do
+            found=false
+            for p in "${produced[@]}"; do
+              if [ "$p" = "$tag" ]; then
+                found=true
+                break
+              fi
+            done
+            if [ "$found" != "true" ]; then
+              ok=false
+            fi
+          done
+
+          if [ "$ok" != "true" ]; then
+            echo "Tag set assertion failed for caddy_tag=${CADDY_TAG}" >&2
+            echo "Expected: ${expected[*]}" >&2
+            echo "Produced: ${produced[*]}" >&2
+            exit 1
+          fi
+
       - name: Prepare addon labels
         if: steps.decide.outputs.do_build == 'true'
         id: addon_labels
