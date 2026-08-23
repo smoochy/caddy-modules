@@ -33,7 +33,14 @@
 - Inspector A, fresh `verifier` on the exact acceptance claim: **CONFIRMED**. It walked all four event names through the `&&`/`||` idiom, confirmed both branches yield a non-empty platform string so the falsy-middle-operand trap does not apply, and confirmed `yq` parses the file and round-trips the expression unchanged. It reported the `actionlint` sub-claim as unverifiable in this environment rather than failed.
 - Inspector B, `executor` in a read-only correctness and simplification posture: spec **✅**, quality **approved**, no Critical and no Important findings. It checked that no step summary text becomes untrue, since the pull-request summary line makes no platform claim, and that the four non-goals were respected.
 
-**Package 2.** Recorded below after wave 2 closes.
+**Package 2.** Implementer: generic, cheapest tier, returned DONE with no concerns. Commit `6bee751`.
+
+- Inspector A, fresh `verifier` on the exact acceptance claim: **CONFIRMED**. It walked the `!=` form of the idiom through both branches, confirmed the pull-request branch yields the empty string and every other event yields `type=gha,mode=max`, and confirmed `yq` parses the file. Two evidentiary gaps were stated as advisories rather than blockers: `actionlint` is absent, and no live Actions run was available to observe `docker/build-push-action` treating an empty `cache-to` as no export.
+- Inspector B, `executor` in a read-only correctness and simplification posture: spec **✅**, quality **approved**, no Critical and no Important findings. It confirmed that no other step in the workflow depends on a cache export existing, and that the `Write build summary` step states nothing untrue for a pull-request run.
+
+**Final whole-branch review.** Dispatched on the most capable model over the whole branch diff, pointed at the ledger's deferred minors. No blocker for merge. It confirmed the two expressions do not interact, that `schedule` and `workflow_dispatch` still get all three platforms and the cache export, and that a fork pull request behaves sanely although `Login to GHCR` is skipped for it, because a pull-request build never pushes. It triaged all three deferred minors as non-blocking. Its one substantive finding is documentation drift in `openwiki/workflows/build-pipeline.md`, which predates this branch.
+
+**Brief coverage pass.** Both points of the brief are assigned to a package and both packages are finished. Nothing unassigned, nothing open.
 
 ## Decide-and-log entries
 
@@ -43,9 +50,12 @@ Every entry is also in the ledger at `.superpowers/sdd/plan/progress.md`.
 2. **Ruling on dispatch granularity.** Packages 1 and 2 stayed two dispatches rather than being batched into one, although both are single-line edits of the same shape in one file and the batching rule would otherwise apply. The approved cut gives each package its own acceptance claim and its own inspector pair, and batching would merge those two review surfaces. **Cost if wrong:** one extra implementer dispatch and one extra inspector pair, no correctness risk.
 3. **Ruling on the missing `actionlint`.** `actionlint` is not installed on this machine, and its absence was accepted as an unverifiable sub-claim rather than a failed one. `yq` parses the file, both inspectors read the rendered expression, and the pull request this run opens is itself a build on the changed paths, so the workflow is exercised for real before merge. **Cost if wrong:** a lint-level defect only `actionlint` catches reaches the pull request, where the run fails visibly and cheaply.
 
+4. **Ruling on the stale OpenWiki page.** `openwiki/workflows/build-pipeline.md` states the platform list and the cache setting as unconditional facts, and both are now event-dependent. It was left untouched: the page is generated, and this repository's `CLAUDE.md` says the scheduled OpenWiki workflow refreshes it and that generated pages are not to be hand-edited. **Cost if wrong:** the page contradicts the workflow until the next scheduled OpenWiki run, and a reader who trusts it believes a pull request still builds three platforms.
+
 ## Ingest status per store
 
-Recorded at run close.
+- **mengram:** written. One `checkpoint` after wave 1, one final `checkpoint` at run close.
+- **ADR store:** written. One `manage_adr` call at run close, get then merge in memory then update.
 
 ## Findings outside the packages
 
