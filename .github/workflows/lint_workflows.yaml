@@ -28,5 +28,12 @@ jobs:
 
       - name: Run actionlint
         uses: docker://rhysd/actionlint:1.7.12
+        env:
+          # actionlint runs shellcheck over every run: block. Three of its checks are noise here:
+          # SC2016 fires on the single-quoted jq programs, which must stay literal; SC2129 is pure
+          # style; SC2155 warns about a masked return value in blocks that run without set -e and
+          # already fall back with || echo "". Every other shellcheck rule and all actionlint
+          # checks stay enabled.
+          SHELLCHECK_OPTS: --exclude=SC2016,SC2129,SC2155
         with:
           args: -color
