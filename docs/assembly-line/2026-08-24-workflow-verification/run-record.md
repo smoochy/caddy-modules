@@ -85,6 +85,13 @@ Every decide-and-log entry made inside the run window, in the order it was made.
 | Package 1, Minor, deferred: the tag-set check is a hand-rolled count plus nested membership scan, where a sort and compare would be materially shorter and equally strong, because the expected list never holds a duplicate. Inspector B states the current code is correct and proposes the change as a simplification only. | Not clustered. Carried to the final whole-branch review for triage rather than proposed as a follow-up, because it lives inside this run's own diff. |
 | Observed during this run window: a stale linked worktree `.worktrees/caddy-modules/actionlint-ci` on branch `claude/actionlint-ci` held an untracked `.github/workflows/lint_workflows.yaml` that would run `rhysd/actionlint` on workflow changes, never committed and never pushed at the time of observation. It was outside this brief, which asks about executable verification of the build workflow rather than linting, but it was adjacent to the standard Package 2 writes down. This resolved on its own while the run was in flight: the same `lint_workflows.yaml` was committed and merged into `main` as PR #23, and this branch has since been rebased onto that merge, so the file exists on `main` today and the stale worktree no longer holds the only copy. | Cluster A, recorded in the report. |
 
+## Whole-branch review
+
+One fresh reviewer on the most capable model read the whole branch against `main` without the plan. No Critical. One Important: the branch predated PR #23, which merged actionlint into `main` while this run was in flight, so the new README section presented the static checks as a local responsibility without naming the CI layer that now runs them, and the run record asserted as current a fact that had resolved. The branch was rebased onto `main` and both were corrected in one commit. A scoped re-review returned ADDRESSED on both halves with no new finding.
+
+The reviewer also triaged the deferred Minor from Package 1 and agreed with the deferral, showing that the hand-rolled count plus membership scan is exactly as strong as a sort and compare here, because the expected list is provably free of duplicates.
+
 ## Ingest status per store
 
-Recorded at run close.
+- **mengram**: one checkpoint at the close of wave 1 and one at run close, each carrying the run's decisions and the two facts worth keeping: that `do_build` is not always true on a pull request in this workflow, and that `README.md` carries a hand-maintained table of contents.
+- **ADR store**: one `manage_adr` call, get first, merge in memory, then update. Never a blind update.
