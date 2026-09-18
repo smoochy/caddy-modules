@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-08-06T07:55:45.285Z",
+  "updatedAt": "2026-09-17T10:02:47.483Z",
   "command": "update",
   "gitHead": "a96125da8cf8a72244cdaef870111971ab20b9b2",
-  "model": "nvidia/nemotron-3-super-120b-a12b:free",
-  "status": "complete",
+  "model": "cohere/north-mini-code:free",
+  "status": "interrupted",
   "language": "en"
 }

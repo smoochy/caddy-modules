@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:0123450bfdad88a21dc041991ef62110f2b19b234aeea2a827f93d4087af6dbd",
+  "claims": [
+    {
+      "id": "claim_981519210e484fd5b165b65dc7695803",
+      "statement": "The repository implements a two-stage Dockerfile architecture where the builder stage compiles Caddy with all declared addons using xcaddy, and the final stage copies only the compiled binary to a minimal runtime image, ensuring the final image contains zero build tools or unnecessary dependencies.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile-cloudflare#L1-L22",
+          "version": "repo-lines-v1:sha256:11420f328b8ad21e15a9d3d2e42e4f69f70f26bbba8cb8f7727a31185b56c956:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzNWYwNmQ5NWRlYmQxY2RkZWYwZjliODMwZTNiMjUzMzY1YmVmZWQ1ZWY4OTA3MDE1ODBjYTJjOGU2YzFmMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3ZDVmYTgxMGEyNDM5NjA0ZGQ1YWU3NjYzNWJlZmQ2ZmYxNjNlYWI3YjE1MzM0YzE4MmQ0Y2M2NGM5M2YyMjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.2",
+    "at": "2026-09-17T09:53:58.385Z"
+  }
+}

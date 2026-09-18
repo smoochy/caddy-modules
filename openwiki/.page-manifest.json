@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "pages": {
+    "/openwiki/architecture/overview.md": {
+      "pageVersion": "sha256:0123450bfdad88a21dc041991ef62110f2b19b234aeea2a827f93d4087af6dbd",
+      "completedBy": "openwiki/0.5.2",
+      "completedRunId": "08cad949-180c-49c5-8593-abf0e9ca6a2c",
+      "gitHead": "9b9cb075a14ac63440a0692d61c9a7ca88a51746",
+      "sourceFingerprint": "sha256:3a04774033ba8c1f2129247625a95206e48c0de0ade1a90b1516bd46f4f60920"
+    }
+  }
+}
