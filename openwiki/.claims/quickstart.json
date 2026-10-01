@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:8ba789b0124b1ceff4bdeef835f8fdd53b24c6533eea710ea7ed80b296342a1a",
+  "claims": [
+    {
+      "id": "claim_3705a32215b3486793f02be60892d7ff",
+      "statement": "The repository provides custom Caddy Docker images with curated modules, published to GHCR (canonical) and Docker Hub (mirror), with automated rebuilds when upstream components change.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L8-L9",
+          "version": "repo-lines-v1:sha256:05ad5885e029338e0f23e46850756fd47ed7cd5e372c08c68ce49e77ebcf0276:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTI2YzU2MjgzMTZhZmM2ZDk1MDg5YTExZGE2OTlkNGRlN2MyZDIwODZjZmI5MDVkNmVlMDI4ODU4Y2YwN2M0MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzY0YTQ1M2U1ZmU5YzJkMTc3YWI1YWE4MjNlZTYxZTdhNGQxYjI0YjJmMGEyNzMzODgxMTUxZmYxMTM5NjcyZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDlkYTYzZWVjMjE1OTBkMTI4OGVkMTkwYWVhNTRkOTkyNWQ5MzE0YzJkN2Q4MDQ5OTRhMzgxY2VkNjU2NzFiNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_491da417f38e4f1f8a1a581206356c25",
+      "statement": "The primary image is ghcr.io/smoochy/caddy-cloudflare-modules with mirror smoochy84/caddy-cloudflare-modules.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L17-L18",
+          "version": "repo-lines-v1:sha256:8a7749447d6d28d141282f221ad7550a129e104d38ddcac5fd66b65c81519c21:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjFkNjE4NTY1ZmI3NGMyOGY4MGFjNjY0ZjliYmE2M2VhMDAxZTIxYTQwYzVhMWI1MDlkNGIzZGVkMjMyOWUyMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWMyOWM2ZDM4MzI2NDVkNDU5NTM4NTliZDczMTM4Yzk4NTk4MTI2YWIzN2NkZTk0OGJkOWE5YTc1NDExNzI0ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGUyZGVkNDM1MDVjZjQ5YmQ0ZmUxZWZjYmM1MWQzYTgxYjMzNDU4ZmQ0M2YwZjVjZGMxZTkzNWU2MjZmNzRmZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjYzOTRlYzNkZDdiMDI5ZWM0NzAwMjI1Y2U1MDVmZjBkNTJhZDMzMmZmYTUzNjRlYjIwZWJkMzcwMGMxNDlhYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_7c80dce24a394d9eae5fb283e4aedcd1",
+      "statement": "The build workflow automatically discovers addon lines in Dockerfile-cloudflare using grep -- '--with'.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L164-L179",
+          "version": "repo-lines-v1:sha256:232048298ff47854bad8e77feceb153e6026ace98934ad182e59868cf22934a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjYmU1MDk1NmIxODBkNzdmZDkxMmMwMmNmYmJmYmFjZWY5MWE5Mjg1NGUwNTY0MmZhNjk3OGUyYWRiNTAwMGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzMTk4NzZiNTEyZDcxNmQwNjNlNTVmMmRiOGQ3YmQ3MTMwMGRmZjlhZmQ1OGMwNGQxNmQ2ODMyNmRiNWU0YWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNjOTg2NDk4ZTk4N2QxNWQyY2RjNDNlNzFhMGEwYTAwZjgwNmE1NWExYTI4MDUyODAwNjA3YWY0MDUyMjcxYzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ0YTljMTk3YWYyZjE1YzhjNzM1ZDIzMmQxMDg3NWU1MTZlMmFiOTQ2MmU0ZGIzYWQ5NDk2M2UxM2FiZjExODcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_03646427829f4b62af5da8175f0c8634",
+      "statement": "The workflow uses OCI labels to detect changes by comparing base digest and addon versions.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L134-L162",
+          "version": "repo-lines-v1:sha256:e48c929e7335a81bb1669bb4752f5a5333a60ca2e410599e5ca904bd3c42bc31:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0ZjgxODgyZGI4MWUwYzg2NmNhMjY5OTdiM2ZhODcxM2JmZjc4Njk5OGQyNzg1YjYxZmExMDAyM2UzM2MxMTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2MjA4NWE3NTcyN2ExYmZkYTRiMGYyOTY2MTFiYjNlYzllMTY2OTBhMjk1MGE5YmI3OTc3ZWRiZGYyNjMwMjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM0N2Y2Y2I3YTc2ZGZhYzUxMDhhMWYxNGY5ZWIxNjNjOWUzNzUwOTNjYWZmYjY4OTQ5YTgzOTg1NTViYjQ2YWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5OWQwZmI2NzgyNThiNzA4NWZmNTJhZTdlOTBiNzVkMTU2MzE0MzMyNjNkZDcwNjdmMDZjZWY2ZTc4MDgwYTMifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L282-L299",
+          "version": "repo-lines-v1:sha256:4baefbaf35974574275200c0be564110e1f5f48cb4b4c69a7476dfda07deea67:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiMzUzMGEyOTljOWU2ZTljOTMwYWUxMDYxOTUzNTg0ZmUyNDJmY2EwMDNkMzIyY2YxZTI5MWQ3OTE0MTFkZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM4MTMzM2RmNjZkNTk1YzYyMjM3NDEyZTdkMTYwN2I1Y2ZiMDExNDdmMGYzYTlkYjdiN2FjNGU3MjljNDNkMjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA1YTc2MzViZDM5ZWUyNTI4NTcyMzcxYjc4YTBjYjA3NGYzOGNjZDQ4NmMyYmFhNjU5YWQ1MjBjMThmNDI2NDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEwNzk1MzUwMTQxZTU5NTAxYjdkMjBiMDUwYmNhMWM1ZWIzZDM3MDExYTRjMjE0MWNiNDcyZmE3NTg1M2Y0NWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a57793d2480d4a369c2d9288f8199389",
+      "statement": "The Dockerfile uses a two-stage build where the final stage contains only the custom-built Caddy binary.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile-cloudflare#L1-L15",
+          "version": "repo-lines-v1:sha256:f324024e524fc6f0edcc97ae31c6d011463dd28731cf3a5f78e4def7557390bd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzNWYwNmQ5NWRlYmQxY2RkZWYwZjliODMwZTNiMjUzMzY1YmVmZWQ1ZWY4OTA3MDE1ODBjYTJjOGU2YzFmMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5Njg4MzFmOTNiZTVkYzI0YmJiODk2NDc5ODQ0ZGU4NzY1MTgwN2ZhODExYjNkYzY2YmUxMmZiMjlkYTU0MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxMThjNWVjMDVjNmQ5ZDAyMDM0ODZjNmIzYWQzM2QwOTM5NTdjZGM3MWI1YWM3MzE4OTVhNTNlMWZiNGIxNTEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-10-01T11:27:53.038Z"
+  }
+}
