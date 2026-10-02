@@ -11,6 +11,7 @@ openwiki:
   test_paths: []
   invariants: [Every build publishes latest and caddy-<x.y.z> tags, OCI labels capture base digest, base version, and all addon versions, Docker Hub mirror is conditional on secrets]
   validation_commands: [crane config ghcr.io/smoochy/caddy-cloudflare-modules:latest | jq '.config.Labels']
+generated: { by: "openwiki/0.6.1", at: "2026-10-01T11:27:53.038Z" }
 ---
 
 # Image Tags & Publishing
@@ -155,6 +156,7 @@ Mirror uses `crane copy` (no local pull/push) for efficiency.
 
 ## Adding a New Image Variant
 
+<!-- openwiki: broken internal link [/openwiki/architecture/overview.md#adding-a-new-image-variant] link "/openwiki/architecture/overview.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 When adding a variant (see [Architecture](/openwiki/architecture/overview.md#adding-a-new-image-variant)), replicate this tagging:
 - `latest` → always newest
 - `caddy-<x.y.z>` → matches Caddy base version

@@ -11,6 +11,17 @@ openwiki:
   test_paths: []
   invariants: [Two-stage Dockerfile produces minimal final image, Build workflow dynamically discovers addons from Dockerfile, OCI labels enable cross-run change detection, Bi-weekly OpenWiki updates via scheduled workflow]
   validation_commands: [docker build -f Dockerfile-cloudflare ., gh workflow run build_cloudflare-modules.yaml --ref main -f force=true]
+verified:
+  - by: openwiki/0.6.1
+    at: 2026-10-01T11:27:53.038Z
+sources:
+  - id: openwiki-source-3cea697c8dad20efcc356a29
+    resource: repo://.github/workflows/build_cloudflare-modules.yaml
+  - id: openwiki-source-42ef8192a0f869c58499e372
+    resource: repo://Dockerfile-cloudflare
+  - id: openwiki-source-23775c3de52f3ab95a13cb8b
+    resource: repo://README.md
+generated: { by: "openwiki/0.6.1", at: "2026-10-01T11:27:53.038Z" }
 ---
 
 # caddy-modules Wiki Quickstart
@@ -31,12 +42,19 @@ This repository provides **custom Caddy Docker images** with curated modules, pu
 
 | Area | Page | Purpose |
 |------|------|---------|
+<!-- openwiki: broken internal link [/openwiki/architecture/overview.md] link "/openwiki/architecture/overview.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 | **Architecture** | [Architecture Overview](/openwiki/architecture/overview.md) | System context, Dockerfile, workflow, data flow, extension points |
+<!-- openwiki: broken internal link [/openwiki/workflows/build-pipeline.md] link "/openwiki/workflows/build-pipeline.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 | **Build Pipeline** | [Build Pipeline Workflow](/openwiki/workflows/build-pipeline.md) | GitHub Actions workflow detail: triggers, change detection, publishing |
+<!-- openwiki: broken internal link [/openwiki/operations/image-tags.md] link "/openwiki/operations/image-tags.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 | **Image Tags** | [Image Tags & Publishing](/openwiki/operations/image-tags.md) | Tagging strategy, OCI labels, reproducible deployments, Docker Hub mirror |
+<!-- openwiki: broken internal link [/openwiki/operations/dockerfile.md] link "/openwiki/operations/dockerfile.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 | **Dockerfile** | [Dockerfile Structure](/openwiki/operations/dockerfile.md) | Multi-stage build, xcaddy, addon declaration, module management |
+<!-- openwiki: broken internal link [/openwiki/integrations/cloudflare-modules.md] link "/openwiki/integrations/cloudflare-modules.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 | **Modules** | [Cloudflare Modules Integration](/openwiki/integrations/cloudflare-modules.md) | Four modules: config, usage, troubleshooting |
+<!-- openwiki: broken internal link [/openwiki/operations/dockerhub-sync.md] link "/openwiki/operations/dockerhub-sync.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 | **Docker Hub Sync** | [Docker Hub Description Sync](/openwiki/operations/dockerhub-sync.md) | README.dockerhub.md → Docker Hub description workflow |
+<!-- openwiki: broken internal link [/openwiki/operations/openwiki-update.md] link "/openwiki/operations/openwiki-update.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 | **OpenWiki Update** | [OpenWiki Update Workflow](/openwiki/operations/openwiki-update.md) | Bi-weekly documentation regeneration workflow |
 
 ## Quick Tasks
@@ -93,11 +111,17 @@ gh workflow run openwiki-update.yaml --ref main
 
 | Change Intent | Start Here | Key Files |
 |---------------|------------|-----------|
+<!-- openwiki: broken internal link [/openwiki/operations/dockerfile.md#adding-a-new-module] link "/openwiki/operations/dockerfile.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 | Add Caddy module | [Dockerfile Structure](/openwiki/operations/dockerfile.md#adding-a-new-module) | `Dockerfile-cloudflare` |
+<!-- openwiki: broken internal link [/openwiki/architecture/overview.md#adding-a-new-image-variant] link "/openwiki/architecture/overview.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 | Add image variant | [Architecture Overview](/openwiki/architecture/overview.md#adding-a-new-image-variant) | `Dockerfile-<name>`, `.github/workflows/build_<name>.yaml` |
+<!-- openwiki: broken internal link [/openwiki/workflows/build-pipeline.md#trigger-conditions] link "/openwiki/workflows/build-pipeline.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 | Modify build triggers | [Build Pipeline Workflow](/openwiki/workflows/build-pipeline.md#trigger-conditions) | `.github/workflows/build_cloudflare-modules.yaml` |
+<!-- openwiki: broken internal link [/openwiki/operations/image-tags.md#tagging-strategy] link "/openwiki/operations/image-tags.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 | Change tagging scheme | [Image Tags & Publishing](/openwiki/operations/image-tags.md#tagging-strategy) | Workflow `meta` step |
+<!-- openwiki: broken internal link [/openwiki/workflows/build-pipeline.md#validation-commands] link "/openwiki/workflows/build-pipeline.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 | Debug failed build | [Build Pipeline Workflow](/openwiki/workflows/build-pipeline.md#validation-commands) | Job summary, `gh run view --log-failed` |
+<!-- openwiki: broken internal link [/openwiki/operations/dockerhub-sync.md] link "/openwiki/operations/dockerhub-sync.md" is root-absolute, which no real consumer resolves against the repository root (not a coding agent reading the page, not GitHub's Markdown renderer, not a local viewer); use a path relative to this file instead. Fix the href or restore the target, then delete this comment. -->
 | Update Docker Hub desc | [Docker Hub Description Sync](/openwiki/operations/dockerhub-sync.md) | `README.dockerhub.md`, sync workflow |
 
 ## Backlog
