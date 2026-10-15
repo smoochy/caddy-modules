@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:e9234481cdc7ce1eb1459c05634a6f71d43a2d14c740bc7309662b68a74fd7b6",
+  "claims": [
+    {
+      "id": "claim_6943d09c3ab244eaafc44ea296e90141",
+      "statement": "The sync_dockerhub_description workflow requires both DOCKERHUB_USERNAME and DOCKERHUB_TOKEN secrets to update the Docker Hub description. Without either secret, the workflow completes successfully but skips the description update step.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/sync_dockerhub_description.yaml",
+          "version": "repo-file-v1:sha256:f7091b74e2e539b5b18ee5c1abbb1e18ddb15c9950c649d5cca338dd3f72fd09"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-15T09:41:41.791Z"
+  }
+}

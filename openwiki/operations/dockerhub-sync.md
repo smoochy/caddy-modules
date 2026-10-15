@@ -11,6 +11,13 @@ openwiki:
   test_paths: []
   invariants: [Runs on push to main when README.md or README.dockerhub.md changes, Conditional on DOCKERHUB_USERNAME and DOCKERHUB_TOKEN secrets]
   validation_commands: [gh workflow run sync_dockerhub_description.yaml --ref main]
+verified:
+  - by: openwiki/0.7.2
+    at: 2026-10-15T09:41:41.791Z
+sources:
+  - id: openwiki-source-7b7ef50f143c881aaee3355b
+    resource: repo://.github/workflows/sync_dockerhub_description.yaml
+generated: { by: "openwiki/0.7.2", at: "2026-10-15T09:41:41.791Z" }
 ---
 
 # Docker Hub Description Sync
@@ -93,3 +100,7 @@ gh workflow run sync_dockerhub_description.yaml --ref main
 After sync, check Docker Hub repository page:
 - https://hub.docker.com/r/smoochy84/caddy-cloudflare-modules
 - Description should match `README.dockerhub.md` content
+
+## Claim
+
+The sync_dockerhub_description workflow requires both DOCKERHUB_USERNAME and DOCKERHUB_TOKEN secrets to update the Docker Hub description. Without either secret, the workflow completes successfully but skips the description update step.
