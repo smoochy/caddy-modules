@@ -11,9 +11,6 @@ openwiki:
   test_paths: []
   invariants: [Two-stage Dockerfile produces minimal final image, Build workflow dynamically discovers addons from Dockerfile, OCI labels enable cross-run change detection, Bi-weekly OpenWiki updates via scheduled workflow]
   validation_commands: [docker build -f Dockerfile-cloudflare ., gh workflow run build_cloudflare-modules.yaml --ref main -f force=true]
-verified:
-  - by: openwiki/0.6.1
-    at: 2026-10-01T11:27:53.038Z
 sources:
   - id: openwiki-source-3cea697c8dad20efcc356a29
     resource: repo://.github/workflows/build_cloudflare-modules.yaml
