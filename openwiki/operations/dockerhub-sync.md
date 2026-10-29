@@ -11,9 +11,6 @@ openwiki:
   test_paths: []
   invariants: [Runs on push to main when README.md or README.dockerhub.md changes, Conditional on DOCKERHUB_USERNAME and DOCKERHUB_TOKEN secrets]
   validation_commands: [gh workflow run sync_dockerhub_description.yaml --ref main]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-15T09:41:41.791Z
 sources:
   - id: openwiki-source-7b7ef50f143c881aaee3355b
     resource: repo://.github/workflows/sync_dockerhub_description.yaml

@@ -2,18 +2,18 @@
   "schemaVersion": 1,
   "pages": {
     "/openwiki/architecture/overview.md": {
-      "pageVersion": "sha256:d919dbffceabe655aec096165c61ef901ebc7e9860a9b9c69449bb25ed8f04a8",
+      "pageVersion": "sha256:42cc5f5cea6a4b3ad6f922334270ae1ca7ec0590e8e166c386e04620569b6c91",
       "completedBy": "openwiki/0.7.2",
-      "completedRunId": "67997872-c2d5-44a4-9e5b-4fe490fd762b",
-      "gitHead": "0ba53f3b76b3f33a5d903b5c9031949a59266085",
-      "sourceFingerprint": "sha256:f21855b1700cfab482a8b765d32b529823b5cd8fd758d0f76bdf304a92751ebc"
+      "completedRunId": "966d4c71-3bd6-4241-92ef-20f6b4b32a5a",
+      "gitHead": "be80799639585a6ec7f5959dc1c075118d08f67a",
+      "sourceFingerprint": "sha256:1ee3508049682a07b3da86631bd9ee8348cc0546bf91fa35135cf79ced73c35b"
     },
     "/openwiki/operations/dockerhub-sync.md": {
+      "gitHead": "0ba53f3b76b3f33a5d903b5c9031949a59266085",
+      "sourceFingerprint": "sha256:f21855b1700cfab482a8b765d32b529823b5cd8fd758d0f76bdf304a92751ebc",
       "pageVersion": "sha256:e9234481cdc7ce1eb1459c05634a6f71d43a2d14c740bc7309662b68a74fd7b6",
       "completedBy": "openwiki/0.7.2",
-      "completedRunId": "67997872-c2d5-44a4-9e5b-4fe490fd762b",
-      "gitHead": "0ba53f3b76b3f33a5d903b5c9031949a59266085",
-      "sourceFingerprint": "sha256:f21855b1700cfab482a8b765d32b529823b5cd8fd758d0f76bdf304a92751ebc"
+      "completedRunId": "67997872-c2d5-44a4-9e5b-4fe490fd762b"
     },
     "/openwiki/quickstart.md": {
       "gitHead": "52378f3635fcd51630c9fa4ab3ff7fa7f0795e6e",

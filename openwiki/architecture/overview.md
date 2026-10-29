@@ -5,7 +5,7 @@ description: High-level architecture of the caddy-modules repository covering th
 tags: [architecture, docker, caddy, xcaddy, github-actions]
 verified:
   - by: openwiki/0.7.2
-    at: 2026-10-15T09:41:41.791Z
+    at: 2026-10-29T11:22:45.470Z
 sources:
   - id: openwiki-source-42ef8192a0f869c58499e372
     resource: repo://Dockerfile-cloudflare
