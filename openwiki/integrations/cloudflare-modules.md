@@ -11,6 +11,15 @@ openwiki:
   test_paths: []
   invariants: [All four modules compiled into single Caddy binary, Modules provide DNS-01 challenge, real client IP, trusted proxy ranges, and Docker label config]
   validation_commands: [docker run --rm ghcr.io/smoochy/caddy-cloudflare-modules:latest list-modules | grep -E "cloudflare|docker-proxy"]
+verified:
+  - by: openwiki/0.9.0
+    at: 2026-11-26T14:51:28.771Z
+sources:
+  - id: openwiki-source-3cea697c8dad20efcc356a29
+    resource: repo://.github/workflows/build_cloudflare-modules.yaml
+  - id: openwiki-source-42ef8192a0f869c58499e372
+    resource: repo://Dockerfile-cloudflare
+generated: { by: "openwiki/0.9.0", at: "2026-11-26T14:51:28.771Z" }
 ---
 
 # Cloudflare Modules Integration
@@ -23,6 +32,10 @@ The `caddy-cloudflare-modules` image includes **four Caddy modules** compiled at
 | **Cloudflare IP** | `github.com/WeidiDeng/caddy-cloudflare-ip` | Extracts real client IP behind Cloudflare proxy |
 | **Combine IP Ranges** | `github.com/fvbommel/caddy-combine-ip-ranges` | Combines multiple IP range sources for trusted proxies |
 | **Docker Proxy** | `github.com/lucaslorentz/caddy-docker-proxy/v2` | Automatic Caddy config via Docker labels |
+
+> **Note on Go version suffixes**: The Docker Proxy module uses the `/v2` suffix in its import path (`github.com/lucaslorentz/caddy-docker-proxy/v2`). This is a Go module convention for major versions v2+. The workflow automatically strips this suffix when querying GitHub for releases (e.g., it queries `github.com/lucaslorentz/caddy-docker-proxy`).
+
+All four modules are **compiled into a single Caddy binary** at build time—there are no runtime plugin loads. The workflow (`build_cloudflare-modules.yaml`) parses the `--with` directives from `Dockerfile-cloudflare` and dynamically discovers module versions from GitHub at build time.
 
 ## Module Details
 
@@ -101,7 +114,7 @@ example.com {
 
 **Purpose**: Automatic Caddy configuration from Docker container labels.
 
-**How it works**: Reads labels on Docker containers, generates Caddy config dynamically.
+**How it works**: Reads labels on Docker containers, generates Caddy config dynamically. The module is enabled by its presence in the binary; no global config block is required.
 
 **Example labels** on a service container:
 ```yaml
@@ -131,8 +144,8 @@ labels:
     10.0.0.0/8
   }
   
-  # Docker label-based config (optional)
-  # docker_proxy is enabled by module presence
+  # Docker label-based config (enabled by module presence)
+  # No global docker_proxy block needed
 }
 
 # Site using Cloudflare DNS for TLS
@@ -167,7 +180,7 @@ api.example.com {
 | `CLOUDFLARE_API_TOKEN` | Yes (for DNS) | Cloudflare API token with Zone:DNS:Edit |
 | `CLOUDFLARE_ACCOUNT_ID` | No | For account-level operations |
 
-## Module Version Tracking
+## Build & Version Tracking
 
 The build workflow **fetches latest versions at build time** from GitHub API:
 
@@ -176,20 +189,36 @@ The build workflow **fetches latest versions at build time** from GitHub API:
 | Cloudflare DNS | `github.com/caddy-dns/cloudflare` releases |
 | Cloudflare IP | `github.com/WeidiDeng/caddy-cloudflare-ip` releases |
 | Combine IP Ranges | `github.com/fvbommel/caddy-combine-ip-ranges` releases |
-| Docker Proxy | `github.com/lucaslorentz/caddy-docker-proxy/v2` releases |
+| Docker Proxy | `github.com/lucaslorentz/caddy-docker-proxy` releases (strips `/v2` suffix) |
 
-Versions recorded in:
-- Job summary (GitHub Actions)
-- OCI labels: `org.opencontainers.image.addon.N.version`
-- Image tag: `caddy-<caddy_version>` (Caddy version only)
+**Version recording**:
+- Job summary (GitHub Actions) includes a table of all addons with versions and release links
+- OCI labels: `org.opencontainers.image.addon.N.name` and `org.opencontainers.image.addon.N.version` for each module
+- Image tags: `caddy-<caddy_version>` (e.g., `caddy-2.8.4`), plus `latest` and `caddy-v2.8.4`
 
-## Adding/Removing Modules
+**Upstream change detection**: The workflow runs daily (scheduled) and on pushes to `Dockerfile-cloudflare`. It compares:
+- Base image digest (`caddy:latest`)
+- Each module's latest release tag/commit against the version recorded in the published image's OCI labels
+- If any upstream change is detected, a new build is triggered automatically
 
-**Add**: Edit `Dockerfile-cloudflare`, add `--with` line (workflow auto-discovers)
+**Adding/removing modules**:
+- **Add**: Edit `Dockerfile-cloudflare`, add a `--with` line with the module import path
+- **Remove**: Comment out or delete the `--with` line
+- **No workflow changes needed** — the workflow dynamically parses `--with` directives and discovers versions
 
-**Remove**: Comment out or delete `--with` line
+## Image Metadata (OCI Labels)
 
-**No workflow changes needed** - dynamic discovery handles it.
+The published image includes the following labels:
+
+| Label | Description |
+|-------|-------------|
+| `org.opencontainers.image.base.name` | Base image name (`caddy:latest`) |
+| `org.opencontainers.image.base.tag` | Base image tag (e.g., `2.8.4`) |
+| `org.opencontainers.image.base.digest` | Base image SHA256 digest |
+| `org.opencontainers.image.base.version` | Base image version |
+| `org.opencontainers.image.cloudflare.version` | Cloudflare DNS module version (legacy, kept for compat) |
+| `org.opencontainers.image.addon.N.name` | Module import path (e.g., `github.com/caddy-dns/cloudflare`) |
+| `org.opencontainers.image.addon.N.version` | Module version (tag/commit) |
 
 ## Troubleshooting
 
@@ -199,17 +228,11 @@ Versions recorded in:
 docker run --rm ghcr.io/smoochy/caddy-cloudflare-modules:latest list-modules | grep cloudflare
 ```
 
-### DNS Challenge Fails
-- Verify `CLOUDFLARE_API_TOKEN` has correct permissions (Zone:DNS:Edit)
-- Check domain is in Cloudflare account
-- Verify token not expired
+### Check Published Image Labels
+```bash
+# View all OCI labels including addon versions
+crane config ghcr.io/smoochy/caddy-cloudflare-modules:latest | jq '.config.Labels'
+```
 
-### Real IP Not Working
-- Ensure requests actually come through Cloudflare (orange-clouded)
-- Check `CF-Connecting-IP` header present
-- Verify `cloudflare_ip` directive in Caddyfile
-
-### Docker Proxy Not Discovering
-- Container must have `caddy` label
-- Container must be on same Docker network
-- Check `caddy-docker-proxy` logs: `docker logs caddy`
+### Force Rebuild
+Trigger the workflow manually with the `force: true` input, or push a change to `Dockerfile-cloudflare`.

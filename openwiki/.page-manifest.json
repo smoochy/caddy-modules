@@ -1,26 +1,89 @@
 {
   "schemaVersion": 1,
   "pages": {
+    "/openwiki/architecture/extension-points.md": {
+      "pageVersion": "sha256:00d9a83dc6a3f1fdbe3d6a66057da3c9c0043fffa197e924bfc76b45fbce159d",
+      "completedBy": "openwiki/0.9.0",
+      "completedRunId": "fbe62464-b7c1-4c90-b193-183f8bd58d01",
+      "gitHead": "854292d1efb093ff88818068a22a8d0f22aead4b",
+      "sourceFingerprint": "sha256:d7fc99188fc8989784e6c3e1ac66334289e93b5f8cd5c3a7354171699072cb6e"
+    },
     "/openwiki/architecture/overview.md": {
-      "pageVersion": "sha256:42cc5f5cea6a4b3ad6f922334270ae1ca7ec0590e8e166c386e04620569b6c91",
-      "completedBy": "openwiki/0.7.2",
-      "completedRunId": "966d4c71-3bd6-4241-92ef-20f6b4b32a5a",
-      "gitHead": "be80799639585a6ec7f5959dc1c075118d08f67a",
-      "sourceFingerprint": "sha256:1ee3508049682a07b3da86631bd9ee8348cc0546bf91fa35135cf79ced73c35b"
+      "pageVersion": "sha256:8f6df086305cf9be1be3ed0769c125e2600982fbde59c2832ebefe349d762a4f",
+      "completedBy": "openwiki/0.9.0",
+      "completedRunId": "fbe62464-b7c1-4c90-b193-183f8bd58d01",
+      "gitHead": "854292d1efb093ff88818068a22a8d0f22aead4b",
+      "sourceFingerprint": "sha256:d7fc99188fc8989784e6c3e1ac66334289e93b5f8cd5c3a7354171699072cb6e"
+    },
+    "/openwiki/integrations/cloudflare-modules.md": {
+      "pageVersion": "sha256:dd315c579fa9671881b3f50ce6155bd089bcdf6a8c2df017a427fc11c0150345",
+      "completedBy": "openwiki/0.9.0",
+      "completedRunId": "fbe62464-b7c1-4c90-b193-183f8bd58d01",
+      "gitHead": "854292d1efb093ff88818068a22a8d0f22aead4b",
+      "sourceFingerprint": "sha256:d7fc99188fc8989784e6c3e1ac66334289e93b5f8cd5c3a7354171699072cb6e"
+    },
+    "/openwiki/operations/dockerfile.md": {
+      "pageVersion": "sha256:8da49a983ca58ddafae998ff7aa349f9446424203201649fd3c20fd1113692c9",
+      "completedBy": "openwiki/0.9.0",
+      "completedRunId": "fbe62464-b7c1-4c90-b193-183f8bd58d01",
+      "gitHead": "854292d1efb093ff88818068a22a8d0f22aead4b",
+      "sourceFingerprint": "sha256:d7fc99188fc8989784e6c3e1ac66334289e93b5f8cd5c3a7354171699072cb6e"
     },
     "/openwiki/operations/dockerhub-sync.md": {
-      "gitHead": "0ba53f3b76b3f33a5d903b5c9031949a59266085",
-      "sourceFingerprint": "sha256:f21855b1700cfab482a8b765d32b529823b5cd8fd758d0f76bdf304a92751ebc",
-      "pageVersion": "sha256:e9234481cdc7ce1eb1459c05634a6f71d43a2d14c740bc7309662b68a74fd7b6",
-      "completedBy": "openwiki/0.7.2",
-      "completedRunId": "67997872-c2d5-44a4-9e5b-4fe490fd762b"
+      "pageVersion": "sha256:57168c52c01572c3f223ac4c5bb64c0fef9bd42999a18bca5b2fd8c4ed3b0d85",
+      "completedBy": "openwiki/0.9.0",
+      "completedRunId": "fbe62464-b7c1-4c90-b193-183f8bd58d01",
+      "gitHead": "854292d1efb093ff88818068a22a8d0f22aead4b",
+      "sourceFingerprint": "sha256:d7fc99188fc8989784e6c3e1ac66334289e93b5f8cd5c3a7354171699072cb6e"
+    },
+    "/openwiki/operations/image-tags.md": {
+      "pageVersion": "sha256:2a18b3272905feb63a9a67e378d83ebeb1aaed84a37c1627115cb9bc0b355885",
+      "completedBy": "openwiki/0.9.0",
+      "completedRunId": "fbe62464-b7c1-4c90-b193-183f8bd58d01",
+      "gitHead": "854292d1efb093ff88818068a22a8d0f22aead4b",
+      "sourceFingerprint": "sha256:d7fc99188fc8989784e6c3e1ac66334289e93b5f8cd5c3a7354171699072cb6e"
+    },
+    "/openwiki/operations/openwiki-update.md": {
+      "pageVersion": "sha256:fb25f255d58253f730f81baafa6813da08bd06b0b6358dac90aa391697995723",
+      "completedBy": "openwiki/0.9.0",
+      "completedRunId": "fbe62464-b7c1-4c90-b193-183f8bd58d01",
+      "gitHead": "854292d1efb093ff88818068a22a8d0f22aead4b",
+      "sourceFingerprint": "sha256:d7fc99188fc8989784e6c3e1ac66334289e93b5f8cd5c3a7354171699072cb6e"
+    },
+    "/openwiki/operations/security.md": {
+      "pageVersion": "sha256:1b8bc4d869bd13c3bf915a9dc9114e989cb7324e83de462aec84f57584c91f3c",
+      "completedBy": "openwiki/0.9.0",
+      "completedRunId": "fbe62464-b7c1-4c90-b193-183f8bd58d01",
+      "gitHead": "854292d1efb093ff88818068a22a8d0f22aead4b",
+      "sourceFingerprint": "sha256:d7fc99188fc8989784e6c3e1ac66334289e93b5f8cd5c3a7354171699072cb6e"
+    },
+    "/openwiki/operations/troubleshooting.md": {
+      "pageVersion": "sha256:ae236c45c911f90de5c3ac6e3c44e6acb2beb75bccdddba0cba60718e04501d3",
+      "completedBy": "openwiki/0.9.0",
+      "completedRunId": "fbe62464-b7c1-4c90-b193-183f8bd58d01",
+      "gitHead": "854292d1efb093ff88818068a22a8d0f22aead4b",
+      "sourceFingerprint": "sha256:d7fc99188fc8989784e6c3e1ac66334289e93b5f8cd5c3a7354171699072cb6e"
     },
     "/openwiki/quickstart.md": {
-      "gitHead": "52378f3635fcd51630c9fa4ab3ff7fa7f0795e6e",
-      "sourceFingerprint": "sha256:88d2809353407cacab248bc4e00a80e899e65f97e18a7066da489d92eec82ca8",
-      "pageVersion": "sha256:8ba789b0124b1ceff4bdeef835f8fdd53b24c6533eea710ea7ed80b296342a1a",
-      "completedBy": "openwiki/0.6.1",
-      "completedRunId": "efb2e89c-2dd7-4b12-bd75-cf782c5a1528"
+      "pageVersion": "sha256:5c0639a2df2f839285caedf12e2e3738d946e60d477e9d02d6ec0da5499fe33b",
+      "completedBy": "openwiki/0.9.0",
+      "completedRunId": "fbe62464-b7c1-4c90-b193-183f8bd58d01",
+      "gitHead": "854292d1efb093ff88818068a22a8d0f22aead4b",
+      "sourceFingerprint": "sha256:d7fc99188fc8989784e6c3e1ac66334289e93b5f8cd5c3a7354171699072cb6e"
+    },
+    "/openwiki/testing/verification.md": {
+      "pageVersion": "sha256:40b677e52e6b750322f7894b73fdaef05f3e31416a64e9bacf64b3da84a35d66",
+      "completedBy": "openwiki/0.9.0",
+      "completedRunId": "fbe62464-b7c1-4c90-b193-183f8bd58d01",
+      "gitHead": "854292d1efb093ff88818068a22a8d0f22aead4b",
+      "sourceFingerprint": "sha256:d7fc99188fc8989784e6c3e1ac66334289e93b5f8cd5c3a7354171699072cb6e"
+    },
+    "/openwiki/workflows/build-pipeline.md": {
+      "pageVersion": "sha256:ca4bfbe2a6a0ccd4f1419dd7abf6e4608f07cf25baf2569974ff3b92d511664b",
+      "completedBy": "openwiki/0.9.0",
+      "completedRunId": "fbe62464-b7c1-4c90-b193-183f8bd58d01",
+      "gitHead": "854292d1efb093ff88818068a22a8d0f22aead4b",
+      "sourceFingerprint": "sha256:d7fc99188fc8989784e6c3e1ac66334289e93b5f8cd5c3a7354171699072cb6e"
     }
   }
 }

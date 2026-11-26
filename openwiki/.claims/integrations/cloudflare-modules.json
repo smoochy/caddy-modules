@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:dd315c579fa9671881b3f50ce6155bd089bcdf6a8c2df017a427fc11c0150345",
+  "claims": [
+    {
+      "id": "claim_82e0d8f0079341088747a2859d66be0b",
+      "statement": "The caddy-cloudflare-modules image includes four Caddy modules compiled at build time via xcaddy: Cloudflare DNS, Cloudflare IP, Combine IP Ranges, and Docker Proxy.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile-cloudflare#L7-L12",
+          "version": "repo-lines-v1:sha256:74e0e9dec275a7282dbebe62dca5a1b6cbbf5d9f38842cbec27cf0d0cf34b13a:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjk5ZmY4ZWQwNGQxZDVlOWI1YjUzYjk4NDUwYTkxN2U2Y2I1ODlkNTUxNzJhNjkzOGJiYzk5YTRkZDQxMjY5MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWZmMWMxMjg1Mzc3MzAyNjU2NDI3YTQ3MGFmMmY1NWY2ZTNjOTMzM2RiMTM5ZmRjMzU4NWUyOWQ3MzBiNDFmZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmVlNGFiNDcxZDVhM2VlZmMxNmNhZGM4YjEyMjUwNDUzMWJjMGQwYTBlNmJiODhiMWQ0YmM1NzliNTQzNmEwYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGZlMzg3NmZjYjdlMDJlZjRhMzBmOGQ2NzY2MzkzYWE5ZTgxZjA2ZjVlNTZiYzRhMTdmNTkzZmM4NDJiNjkzOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_039b8f89a24b4e4ea7b40e3c2ead2abb",
+      "statement": "The Cloudflare DNS module (github.com/caddy-dns/cloudflare) provides DNS-01 ACME challenge automation for Cloudflare.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile-cloudflare#L7-L7",
+          "version": "repo-lines-v1:sha256:f99ff8ed04d1d5e9b5b53b98450a917e6cb589d55172a6938bbc99a4dd412691:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjk5ZmY4ZWQwNGQxZDVlOWI1YjUzYjk4NDUwYTkxN2U2Y2I1ODlkNTUxNzJhNjkzOGJiYzk5YTRkZDQxMjY5MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjk5ZmY4ZWQwNGQxZDVlOWI1YjUzYjk4NDUwYTkxN2U2Y2I1ODlkNTUxNzJhNjkzOGJiYzk5YTRkZDQxMjY5MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmVlNGFiNDcxZDVhM2VlZmMxNmNhZGM4YjEyMjUwNDUzMWJjMGQwYTBlNmJiODhiMWQ0YmM1NzliNTQzNmEwYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGZjY2QyMzQzZmYwY2ViZDJjMmUzMjZiODdkOGQyMjZiYWM1ZDZkNGE4MjI5MmQ3ZTVmZTlhYzc5YzljODQ3MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_45a858dfa08c47cc978c69ac1998cb30",
+      "statement": "The Cloudflare IP module (github.com/WeidiDeng/caddy-cloudflare-ip) extracts the real client IP from the CF-Connecting-IP header when behind Cloudflare proxy.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile-cloudflare#L8-L8",
+          "version": "repo-lines-v1:sha256:4619ba9bfa052956e14f45f11c9d1463842199df5624a46b827f8b3cfb6732f0:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDYxOWJhOWJmYTA1Mjk1NmUxNGY0NWYxMWM5ZDE0NjM4NDIxOTlkZjU2MjRhNDZiODI3ZjhiM2NmYjY3MzJmMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDYxOWJhOWJmYTA1Mjk1NmUxNGY0NWYxMWM5ZDE0NjM4NDIxOTlkZjU2MjRhNDZiODI3ZjhiM2NmYjY3MzJmMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDU4NDkxZGU4YjE0MThmOTZiYzg1ZDBkZWEwNGMwYWY1YWIwYWMxZWVjMWEzYjYxMDM3M2Q4ZmIyYzk4NzFjMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmQ1YjgwNGQ5OGUzZDVkMGUxOWZjYzBiZjk4NDM0YmQ5ZWM5YzMwNTUwYmViYTI2N2U4MTlmMTViYmE3YWExNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e236c80884b84e31b5ab1fa2423d1e46",
+      "statement": "The Combine IP Ranges module (github.com/fvbommel/caddy-combine-ip-ranges) aggregates multiple IP range sources into a single trusted proxy configuration.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile-cloudflare#L9-L9",
+          "version": "repo-lines-v1:sha256:300ed259d538a1c97f0fef3d4af335fa992739fdee8f3a12fe1be8e44dbafab4:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzAwZWQyNTlkNTM4YTFjOTdmMGZlZjNkNGFmMzM1ZmE5OTI3MzlmZGVlOGYzYTEyZmUxYmU4ZTQ0ZGJhZmFiNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzAwZWQyNTlkNTM4YTFjOTdmMGZlZjNkNGFmMzM1ZmE5OTI3MzlmZGVlOGYzYTEyZmUxYmU4ZTQ0ZGJhZmFiNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWFlZTBlMGYwYmYzM2U2NGQ3OTM2NzY3MzcyNDYzNTFkZjEwMzZlNTAzNzBmNDExNzYxMWNhN2UzZTkzYTg1NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzEyZWVmOGM5ZjFjYjFkNDQyZTQyOWUwNTJlODgyN2RjZjdmN2E2M2NiM2VjOTJmNmE3MzgzZmY5YTZkM2MwZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_68cc8d36c1c942c9acf3403d1e2a80d6",
+      "statement": "The Docker Proxy module (github.com/lucaslorentz/caddy-docker-proxy/v2) provides automatic Caddy configuration from Docker container labels.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile-cloudflare#L10-L10",
+          "version": "repo-lines-v1:sha256:01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjU5ZWExZjE0YTkwN2NkN2UyYjA0MTM3NjAxOWEwMTM4MjhjODhlYjI1OGViZDUyMWQxNmY5YWM3ZWM3N2I4ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjk2ZmE4NzIwOWVjYWFjYTQxYzk0ZWE3YWJiOWI5ZmVhNDUwYzNiYWJkYWNlMjdlOWY0NzlkNjA1YjY3YjViOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2c4855653d8444fc8916f0bfe5a94d4d",
+      "statement": "All four modules are compiled into a single Caddy binary at build time; there are no runtime plugin loads.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile-cloudflare#L5-L16",
+          "version": "repo-lines-v1:sha256:1ec4e883090e363a4256a353960e32016915185cca0f58c3ca2b467c213a62d7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhN2NlM2E0ZTQxM2YxMjRhNjc0OGVlZGFlZjU2YjdjYWE1NjYyNTBhOWU5MzY3NzNlZWFiMDEwNDFmMTg3ZTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzMDg3ZGQ0OTgwMjliNTk0ODczMjQ0ZmU2MDZiYzQzMzgyMjRlYzg3N2YxOTZlYzgyMjVkODg3MTE0ZTM5YzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM2OTYwYzU5ZThjMDFkZDFiYTBiMGNjYWJlYzhmNTM1YTczMjEzZGZkMWQ0YmNmMWEyMTNhZDhjYTE4N2FkZmMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b1e95ca0394143e9aeae27ddca09391c",
+      "statement": "The Docker Proxy module uses the /v2 Go module suffix convention for major version v2+; the build workflow strips this suffix when querying GitHub for releases.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L150-L155",
+          "version": "repo-lines-v1:sha256:f50cbd48ad8a5520d0b75cf8f7d8bdcbf483bd9cd9b11b0a6e3c35f55b68b58a:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzEwZDlkYzI5YWVlYmYwNDc0ZmY1OWMyOTM1MWFhYTdhYTU1ZTY3MTQzNWRkM2YxNTVjM2UyNmQ3YTRmOWY1MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDNiNjU3NDkyZTliNTkwMmQyMmRkOGU4NTg4MTc1NzNkNTkxMTllNTMzMjgzMTlhZjZhZGExNDkzN2U0NDhkZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODI1OWQwZTA4MWM3ODI2MzE4MGViNzI0YjU5OTAyNDY1Mjk2ZGQxZDFmYzRmYTNkMDIzYTE5NTk2MjU3ODA2NCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fc5c77aea79747c88f802a09bf27549d",
+      "statement": "The build workflow dynamically discovers module versions from GitHub API at build time by parsing --with directives from Dockerfile-cloudflare.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L118-L140",
+          "version": "repo-lines-v1:sha256:86e57498cf38c1b267ce188c02656067f0fac04148f83a716fc542c67745d7e7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxNWUwMjU2N2FlM2U4MTBjM2NjMTUyZGYwYjJkZDEyOWQzMzU3YzQ2Y2YzZDFiZjYxY2M0NGM5ZGZhMzliMWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwMWQ1MzEzYzA2ZmQ2Njc5YjdiYWMwMjY5MDRiMWMxNTVjZWQwNWU4ZmM5NzIzOGRhN2Q5ZjQ1MGE2YTFiMDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxODZmZGE0MTkzYjA5MTM1MDVhYWIzNTAzMjIxNDI1Zjk5NjIyY2M3YjNjMWU1MDVlNGQ1ODRlYjdlYjA4NDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRlMWNhNGUyMjcyNGZhYTg2NmI2OTU0OTUxYzlkNThjODkxNzU0NzIzOWJiNzM5YjQxNzlkMTRiMDk0M2YzZWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_00514e967fed412785af35b63098d5e1",
+      "statement": "Module versions are recorded in OCI labels (org.opencontainers.image.addon.N.name and org.opencontainers.image.addon.N.version) and image tags (caddy-<caddy_version>).",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L280-L300",
+          "version": "repo-lines-v1:sha256:95bcadf0966500b46dda6cc9c120753ea8be52b4eab37dc143b3d134c662cd11:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM4MTMzM2RmNjZkNTk1YzYyMjM3NDEyZTdkMTYwN2I1Y2ZiMDExNDdmMGYzYTlkYjdiN2FjNGU3MjljNDNkMjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5MDYxNTc2OWQ2ZjJjNDg2MTZiZmUxOGFiNTA2Yzg4MDQyNDk1M2NlOGRlZDZlMTBmZWNlZWY0YTBjMmRiYTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE1ZjQ1MWIxNGQ1NDQ5MTE3MzdhYzc3YWFmZTRjNTVlNGEzZjQ5NGJjZjk3YTUyY2E1YjZkYTQzODExNjQxYzQifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L590-L620",
+          "version": "repo-lines-v1:sha256:73474d77490d975bd973b03afc3246fb317b1f0cd7d8185861f0c1231b07c85d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliMDNmOWRjOWRkYTEyNGQwNTRmYWM5YzQyZmY5ZjYzYzBhZTYxNGFlYWE3ODlhNjY2NDc1ZjM5ODQ4ZGI3MmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYwOWQ5OWM5Y2NlMTNlNWFhZTFiYjUxYzBhZjAxNjY5MzYxODE0OGMyOTY3Y2FmYjAyNTJiOGFhNjc5YjVhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3ZGQ2MDMwOTYxYzY2ZWRhNmQ0NjE5MzJiOGFmNjEyNTZhZTI4M2ViNDNlZjZiOTkyZDQ1YWY4NDc5MmEwZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2MWRjNWI4NjZkNGQ2NzUxMTUzMGVhMDdhNjM0YzVhMzc0MDJiODY5ZDUyNTk3OWNhNGYyZTNmYmM0OTI5OGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2a0cd6c85b064700a47e8f78232867f7",
+      "statement": "The workflow runs daily on a schedule and on pushes to Dockerfile-cloudflare; it compares base image digest and each module's latest release against published image labels to detect upstream changes.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L380-L420",
+          "version": "repo-lines-v1:sha256:282b6a57bf8f994d5bfbb038ee2bdc6a142c8e54fd2e15653708febe19d1ea54:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlZTRjOWE5NGU1NjQ3NjYzZWY3ZGUxNzRjYzI4YmJhMzUxYTRkZjNiYzVjMzA1NjAxZTE0NDE1ZTVlZjVhNWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxZDNjOWNlNDA1NWRhMzJlMzFiZTZhMDVhNGI3MzU5OThmNzBkOGE3OTA5ZmIyMTk4ZDJmODE1MTY5YzEwMGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY5MjJkOTIzZDUzZTk0MWI3N2M2MDFlOTZmZWJmM2ZhYzYzNGFiMDhhOWNhMWNhMmYxOTkxMDMyNzgxZjQ1Y2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2ZTBhZWY4NTAxYmI5MjJiNDIwOGMzMGNkZTJiMDI1MjFmMmUzMDZhNWUzOWQ2ZTI5NDQyNWZmNGMyYTJlNDAifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L6-L12",
+          "version": "repo-lines-v1:sha256:ab1f739a6fca6997c0801b8a0a5c5561e93836ddfde5ac22725a145be3689f5b:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjYwODkyYjMxMTgwY2IzNmE5OGQwMTkwZTQ1ZjIzZDllYzdlNjNkZGE4ZTRmZGFkZjgwMjg2NzhkZjY3YTk2YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2YzMWU0N2M4NjkyYTljMzQzYmMyMTc4MTNmYWEyNTA4MmI1Y2Q3MzRlODMwNDdhNzljYWQwMTE5NWNhMDI2NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWZhNDY4YjgyNTdmMWY2MzRmNGE3MDk4Yzk1MTAzNDAxZjBhYTk1YTkzODljZDQwMDJiZDRhMGQ4MzhiZjIzYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWJkZDM2NjQxMjRmMWFiNTIwZDdiZTgwN2UxNTk1NTk0ODQ4OWY4NDcyYmY0NDhhZTMzYTRjMGY5MWEzOWMwYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c0e9c702cdf24eb99f434f2f4c892c27",
+      "statement": "Adding or removing modules only requires editing Dockerfile-cloudflare to add or comment out --with lines; no workflow changes are needed.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L118-L140",
+          "version": "repo-lines-v1:sha256:86e57498cf38c1b267ce188c02656067f0fac04148f83a716fc542c67745d7e7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxNWUwMjU2N2FlM2U4MTBjM2NjMTUyZGYwYjJkZDEyOWQzMzU3YzQ2Y2YzZDFiZjYxY2M0NGM5ZGZhMzliMWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwMWQ1MzEzYzA2ZmQ2Njc5YjdiYWMwMjY5MDRiMWMxNTVjZWQwNWU4ZmM5NzIzOGRhN2Q5ZjQ1MGE2YTFiMDciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxODZmZGE0MTkzYjA5MTM1MDVhYWIzNTAzMjIxNDI1Zjk5NjIyY2M3YjNjMWU1MDVlNGQ1ODRlYjdlYjA4NDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRlMWNhNGUyMjcyNGZhYTg2NmI2OTU0OTUxYzlkNThjODkxNzU0NzIzOWJiNzM5YjQxNzlkMTRiMDk0M2YzZWIifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-26T14:51:28.771Z"
+  }
+}

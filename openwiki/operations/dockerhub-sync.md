@@ -15,6 +15,9 @@ sources:
   - id: openwiki-source-7b7ef50f143c881aaee3355b
     resource: repo://.github/workflows/sync_dockerhub_description.yaml
 generated: { by: "openwiki/0.7.2", at: "2026-10-15T09:41:41.791Z" }
+verified:
+  - by: openwiki/0.9.0
+    at: 2026-11-26T14:51:28.771Z
 ---
 
 # Docker Hub Description Sync

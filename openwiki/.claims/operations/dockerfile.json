@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:8da49a983ca58ddafae998ff7aa349f9446424203201649fd3c20fd1113692c9",
+  "claims": [
+    {
+      "id": "claim_b974f0142aeb4c5a8484a4e12c7e03a7",
+      "statement": "Dockerfile-cloudflare uses a two-stage multi-stage build: a builder stage (caddy:builder) that compiles Caddy with xcaddy, and a final stage (caddy:latest) that copies only the compiled binary.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile-cloudflare#L1-L10",
+          "version": "repo-lines-v1:sha256:26060151352854e0c800f940b85f79ad6dc1d6a07f6ccf362f3c5d49b7dfd621:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzNWYwNmQ5NWRlYmQxY2RkZWYwZjliODMwZTNiMjUzMzY1YmVmZWQ1ZWY4OTA3MDE1ODBjYTJjOGU2YzFmMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY5NmZhODcyMDllY2FhY2E0MWM5NGVhN2FiYjliOWZlYTQ1MGMzYmFiZGFjZTI3ZTlmNDc5ZDYwNWI2N2I1YjkifQ"
+        },
+        {
+          "resource": "repo://Dockerfile-cloudflare#L12-L18",
+          "version": "repo-lines-v1:sha256:6aa0c2f423f2c70fcb8639eba8f312e09b2333351ba020708b19ddec680a8bdc:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWZmMWMxMjg1Mzc3MzAyNjU2NDI3YTQ3MGFmMmY1NWY2ZTNjOTMzM2RiMTM5ZmRjMzU4NWUyOWQ3MzBiNDFmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDEzZjEyZmQzMmM3NGJiNTMzOGVkMzk1YWM0NWU2N2VkMTkxYTc0MjVhMWQzOGViZmMxZmU0ODBkMDU2MDMzMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmQ1YjgwNGQ5OGUzZDVkMGUxOWZjYzBiZjk4NDM0YmQ5ZWM5YzMwNTUwYmViYTI2N2U4MTlmMTViYmE3YWExNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmJlOGI3NzNmMjYxZTA5MDU5YzQ0M2M0YmE4MmM2N2Y3YTA5ZGMzYjlkNzgxOGEzM2NiYjc1Y2I0MTAzYmU4NCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fef56b80ae194d299faf46d2b1b85d6c",
+      "statement": "The builder stage runs `xcaddy build` with multiple `--with` flags, each specifying a Go module import path for a Caddy module to be statically linked.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile-cloudflare#L4-L9",
+          "version": "repo-lines-v1:sha256:6353f448e57b15c91895f62595574753e71a51cf7a52042aeee53afdf06c18d5:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzliZGJiNmVhZDk3ZDhkNTNmOTc4MDAwMjhmNGE1YWFiZjZjNzAyNGYwMjEwMGYyMzlmZTI2MDc3NTA3YjdjMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzAwZWQyNTlkNTM4YTFjOTdmMGZlZjNkNGFmMzM1ZmE5OTI3MzlmZGVlOGYzYTEyZmUxYmU4ZTQ0ZGJhZmFiNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzNiNGNiMjlkZTNlZWQ0MjU2ZjIxNzI0YmRkOTMxNWFhODBiYzk5OWUyNTBmOGMyZTlmM2E4ZTM5OWJiOWE2NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzEyZWVmOGM5ZjFjYjFkNDQyZTQyOWUwNTJlODgyN2RjZjdmN2E2M2NiM2VjOTJmNmE3MzgzZmY5YTZkM2MwZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a253cfd505a94695b41225dfe602abea",
+      "statement": "xcaddy creates a temporary Go module, adds each --with module as a replace directive, runs go build, and outputs the binary at /usr/bin/caddy.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile-cloudflare#L4-L9",
+          "version": "repo-lines-v1:sha256:6353f448e57b15c91895f62595574753e71a51cf7a52042aeee53afdf06c18d5:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzliZGJiNmVhZDk3ZDhkNTNmOTc4MDAwMjhmNGE1YWFiZjZjNzAyNGYwMjEwMGYyMzlmZTI2MDc3NTA3YjdjMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzAwZWQyNTlkNTM4YTFjOTdmMGZlZjNkNGFmMzM1ZmE5OTI3MzlmZGVlOGYzYTEyZmUxYmU4ZTQ0ZGJhZmFiNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzNiNGNiMjlkZTNlZWQ0MjU2ZjIxNzI0YmRkOTMxNWFhODBiYzk5OWUyNTBmOGMyZTlmM2E4ZTM5OWJiOWE2NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzEyZWVmOGM5ZjFjYjFkNDQyZTQyOWUwNTJlODgyN2RjZjdmN2E2M2NiM2VjOTJmNmE3MzgzZmY5YTZkM2MwZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_3c0d5bce25dd469f9280eb718eee7c88",
+      "statement": "Module versions are not pinned in the Dockerfile; xcaddy fetches the latest compatible version at build time against the Caddy version in the builder image.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile-cloudflare#L4-L9",
+          "version": "repo-lines-v1:sha256:6353f448e57b15c91895f62595574753e71a51cf7a52042aeee53afdf06c18d5:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzliZGJiNmVhZDk3ZDhkNTNmOTc4MDAwMjhmNGE1YWFiZjZjNzAyNGYwMjEwMGYyMzlmZTI2MDc3NTA3YjdjMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzAwZWQyNTlkNTM4YTFjOTdmMGZlZjNkNGFmMzM1ZmE5OTI3MzlmZGVlOGYzYTEyZmUxYmU4ZTQ0ZGJhZmFiNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzNiNGNiMjlkZTNlZWQ0MjU2ZjIxNzI0YmRkOTMxNWFhODBiYzk5OWUyNTBmOGMyZTlmM2E4ZTM5OWJiOWE2NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzEyZWVmOGM5ZjFjYjFkNDQyZTQyOWUwNTJlODgyN2RjZjdmN2E2M2NiM2VjOTJmNmE3MzgzZmY5YTZkM2MwZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5f3fb48db2644142b968d8a8400ed53c",
+      "statement": "Commented --with lines (starting with #) are ignored by both the Docker build (shell comment) and the workflow parser (explicit filter for ^[[:space:]]*#).",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L179-L185",
+          "version": "repo-lines-v1:sha256:a0e950f978e49c125058f57de5b687de57030f403c7852c6604a2c22f4f27fb9:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTMxOTg3NmI1MTJkNzE2ZDA2M2U1NWYyZGI4ZDdiZDcxMzAwZGZmOWFmZDU4YzA0ZDE2ZDY4MzI2ZGI1ZTRhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWJhNWUxMjBiNjQ2MTAwNmM1NWQzYTE3YTQ0ZGI5NmY5OTM4MWUxMTA0NWViYjgzYjIyYjE1MWE0NzFjOTc2YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjg5OGJhNGVhNjcwZWZlYzg5YmQ2NjhmNzBkOTU2ZGQ5MzQzOTVkZGUxNWY3NTg0ODhjYzE0Y2ZiNGMzNzdhZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjRlNDNhMzI2ZmM4YTA5MjUzNTdhN2NjYmE1YmExNmUzNzBlMzEzNTViZjY0OTcxODMzM2RkYWM2ZGQzOTQxZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9e1843a1dd084ab198c20fabbc69d108",
+      "statement": "The workflow parses --with lines from Dockerfile-cloudflare using grep, filters out commented lines, extracts module paths, and queries GitHub for each module's latest release/tag/commit to generate dynamic labels.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L179-L220",
+          "version": "repo-lines-v1:sha256:233c1e82c825f7c19ce3785489de105b66c0426912572573e0302aae1cb6e3c3:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzMTk4NzZiNTEyZDcxNmQwNjNlNTVmMmRiOGQ3YmQ3MTMwMGRmZjlhZmQ1OGMwNGQxNmQ2ODMyNmRiNWU0YWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0YjZlMTU0NTIyODI1MzdkZmY0ZTg0NjM1MDI2NDI4MDYzY2RkOWVkNWFmM2M1ZDM0MTJkMTAzNzc3NTc0MDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI4OThiYTRlYTY3MGVmZWM4OWJkNjY4ZjcwZDk1NmRkOTM0Mzk1ZGRlMTVmNzU4NDg4Y2MxNGNmYjRjMzc3YWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4NTk3MDNmZWRlZjM2M2I5ODk2YWM1ZGRjNjc5ZGI1ZmQ5NTYyODkwZDUwMTc5ZmU1Y2NkNTE3OTU0YjJkYTgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b83d253273b04d7ea4bd3f757f83eb11",
+      "statement": "The workflow injects labels at build time via docker/build-push-action labels input, including base image metadata (name, tag, digest, version), per-addon metadata (name and version indexed by position), and a description override.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L629-L650",
+          "version": "repo-lines-v1:sha256:803fd3e0f96f6c18af706d52e5b94d867c2d6730fca822df5355f7906da770ff:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjMjdiOGUyMWY5NmUwOGU2YjQ2ODliMTJiMGE4NzliN2FjMjk4OTQ5YTZmYTJhNjhlODYxZWM4YTJkZDJjODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMjJmMWY1YWYyYjYxYjUyOTQ4ZWM3OTNhNWYyMTIxMTQzOGM1OGEzMjQwOWZiNDg2MDA4OWQ3ZGY2OTc1NWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0YzEwZWZjZWIxMGU5NDkyMDMwZDcwOWMyMzcwNmYyYTVlZWJiMjNhYTk2MGQ4ZDEzOTA1Y2QxNzM0ZTMxNTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQwNjU0NDQwNmI2NTJjYTk2NjRjNjlkNDlkMTAyZDg5MzMzNjBiN2RiNDZjMDI0MjZiYjViY2MwMzA3MTE1M2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c4225de8a4ba434699e3b500b18ff784",
+      "statement": "The .dockerignore file excludes .git, .github, *.md, LICENSE, and .gitignore from the Docker build context to keep it small and prevent cache invalidation.",
+      "evidence": [
+        {
+          "resource": "repo://.dockerignore#L1-L5",
+          "version": "repo-lines-v1:sha256:c3fd0332b2b262e731e7b9459ff3e5cc3ae9b0fcba91ffa22673ce39f8963fa7:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmQwM2YxNmZjNWFkOGJlNzBkNmUwNDkxZmEyZTAyOWJjNGEzMWY1YjBkZTZkNGFkZjhlN2RkNzA5ZDIzODQwZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2RkNmYwNGM0NjhjMTcwMWNkNWU0MzAxOGZkMzJhYjgxYzg2ZGRkZGY5MGNkMDM4NjUxZDRlNDA1ZGY3MTVhNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c2ca67abf5f945a88d4739d020d465e6",
+      "statement": "The workflow triggers on pushes to main that touch Dockerfile-cloudflare, .dockerignore, or the workflow file itself, as well as on schedule and workflow_dispatch.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L1-L20",
+          "version": "repo-lines-v1:sha256:95779db762b9e5daa91f9a0ff0f431bd44d3b78ba4a94e41f58dff95e280b9f8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZTVjODczMzdjN2QyYTYzMDhiMWNhMDFjNGU1NTYwODI0YmVlMjhjOWFlNjE2ZDQ4ODdjZTE3NWFlYjIxOTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwZDMwZTBlMDQyZWU0MWE5YmIxMTQ4ZmVjZjFmNDFjOWExNDgxN2NhMjEzYmEyNzY4MmUxNjIzZmM5NmEzNTcifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-26T14:51:28.771Z"
+  }
+}
