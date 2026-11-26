@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:fb25f255d58253f730f81baafa6813da08bd06b0b6358dac90aa391697995723",
+  "claims": [
+    {
+      "id": "claim_6d13ec9975c0420dad301d1be8d42fe0",
+      "statement": "The openwiki-update workflow runs on a bi-weekly schedule (Thursdays 05:00 UTC) and on manual dispatch.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L6-L10",
+          "version": "repo-lines-v1:sha256:b0c3b8e8dcc684d863679fa4037f361050d1b739956790684aece6b3ee23b0e6:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRhZDY0YzU1Nzk2N2QxYmM0ZGIxOGY2OTE0ZmIyY2IwMDcyYzFiN2Y4MjBhZDM1Mjc5MDkyY2Q4NmJlNDk2MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTc0M2EyYTJmYjgyZWFlZDI0ODhlMjg2NGQ0MjNiZWI1MDA2MWRkNDIzZDgwYjg3MjFkM2JhZTVhNjQ3YTdmNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmEwZmEzMTgyNjM0NDA4MmViNjkxYjRjMjQ5MjdlZjU1ZmI1NmUxNTk5MDkzZTYzMTUzN2ZkN2ZjYzc0YzhjMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTRjZjc5MjU3NWE2MWI2Njc5Y2Q4MWZmODcxZTVhMzI3NzRhN2U0MjYxZmZmYjA1MGMzZjAxNDhkZGY3NjcxNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_429aa33ff14345d28f982c3fece4a10c",
+      "statement": "The workflow uses a parity gate job that checks ISO week number parity to enforce bi-weekly execution since GitHub cron cannot express 'every other week'.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L13-L32",
+          "version": "repo-lines-v1:sha256:89bafebb3c68a9cdd6e49f29691f85ce785f5df24206603ca387c24bab5d1e29:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljMmM3OTczN2Y1NjI2YjQ3ZWI5Mjc4YTc5Y2Q2NzM5ZjE5NDNiNTVlOTlmNGFiNTQzYTgzNjUyOWRjM2Y3NTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwOWQ0NjE4NTQ2NDRmNjI2NGQ3ZjViMjE2NGQ3N2NhNjA5ZmIwNzBiNjY5MDcyNzgzYTA3NGVhNWJlYjcyZjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMjNjMjQ3Nzg0NTEwZDVjMjYxOGVkNzFkMzlkYjFkYTM4Yzc1YWJmMGQ2ODgwMGFhNTVkNmJiM2RmMjI5ZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmNjRlN2VmN2M2YzIzNWNkYTdhZWE2YTgyYzhhMTg2YjQ1M2QzNjlhNzgyOTMxM2ExZmIxZDVjMzhjOGJlNjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bbee2ab3ca58481fbfc4a98b8d3abcc6",
+      "statement": "The parity gate always allows manual workflow_dispatch runs to proceed regardless of ISO week parity.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L18-L21",
+          "version": "repo-lines-v1:sha256:dc7ed858091e65ea1f901acc008059f0dd0f16b0fe8dcd93b67442ce7d34b5dd:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODZjOGE2OTU3ZTI4OTRhYmY4NjAxZDEwNTRkNTU4YWQ1YmM2Zjk1ODAyYzc2YWQ1MmRiY2JhMjgxZjcwNGM5MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmQ0NTgwMTZiYTk3N2IyYzFhNzNjYmE1ZmNlMjE3ODAwYjI1ODQzM2M3ZjUwMTMyNzM3YThhMTc0MGVmN2NiMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDM5MzZjYmEzMGE2MzcxY2JmNGQyMzY1ZTEwMjY2MWM4ODE1OTY2ZTE3NWU3YTdkMjFhMjEzZjViNjNmOGUyZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzU4M2ZlMzkyZTlmYmU5YTI0MjZhZjhkNDM0MjRhNjUyNzVkNjJhZDE1ZDFmMzM2ZGNmNjI5MTU3ZDMyZTdmNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4e672a92040e442aae9961c739228d70",
+      "statement": "The parity gate uses '10#' prefix with date +%V to force base-10 interpretation and avoid octal parsing issues with week numbers 08 and 09.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L24-L25",
+          "version": "repo-lines-v1:sha256:435a72daf56994a5c635233110e6ce8074915e18ca8381d7ca87c17a1185b0c2:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODQ4OGQ1OTcxYWU0YzI2ZDdkNjIzNmFjYzY3YTM5ZDMxY2UyMmIxZTk5MTFhYjg3MjFiYWM3OWY4N2JjODUyMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDllNTEzZGQ1OGQ0OTliN2Q1OGIyNDVmNWRhMTdiODgwMTQwOWQ2MzI4ZTJmOGQ2MDQ5MzhlNGUwMzUwMDZhYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjQ4YTQzYWE2ZmNiOTQ5ZjYzMmVmYjQzM2U5MmI2NTk0N2FjZGY0ODJmNDQ4M2IzNDZhZTJhNzRmNjk5OGI4MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGY3ZDBmYjNmZjMwNTVlNDYyNjM4ZGEyNDY0YjNkMzJlNDEwODBmMWIyYzYzODRkMzYyZmY2ZmYzODEwMTBhNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_11044ff9d9204602b1dadc7a4f361d8f",
+      "statement": "The update job fetches candidate models from smoochy/openrouter-model-list models-openwiki.json, filtering to sanity_ok models only.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L50-L60",
+          "version": "repo-lines-v1:sha256:79a9b83a96ee8ac41fe2d37deb235b65d051aeca630c639e231f541c7b1c4a44:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyYTMxYzdiODhiN2E0YmIzZDljNWVmODU4MGQ2ZjEwMmUzMTI3MjdiZDFiNjI4YmVmYTIyYzcyYTYzMGRmNWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyYjczMGU3YzQxOGUxY2FhNTBmMWZiN2Y0OWQ4NTBhMDRjM2I4MTRhMWI1Y2RlZTdmYmU5MDVmMmI1YWE2ZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkYjgwZWEwMzExZGYzZDgyMDJkMTdiODQ4MWI0YjY3ODVhMzIzYThiMWU1ZWExOGJmNjEzNDU2MDVkM2U3NjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjZTUxZDNiZTYxOTI1ZmYwMTJkMjQ2N2E2MTZlNjRkZWM2MmMyOWNiMTQ4M2NlMDZhMmFhMWQ3NmM1ZGEzZTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0c8f303d817e4ff0a09032b9230a855d",
+      "statement": "The sanity_ok flag only proves a smoke call succeeded, not that the model survives a full OpenWiki run, necessitating multiple fallback candidates.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L50-L54",
+          "version": "repo-lines-v1:sha256:a3368175acf5f66463490398f6a9f9568a0b63f00d30cf4194ca03eab3711961:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTJhMzFjN2I4OGI3YTRiYjNkOWM1ZWY4NTgwZDZmMTAyZTMxMjcyN2JkMWI2MjhiZWZhMjJjNzJhNjMwZGY1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWRiODBlYTAzMTFkZjNkODIwMmQxN2I4NDgxYjRiNjc4NWEzMjNhOGIxZTVlYTE4YmY2MTM0NTYwNWQzZTc2NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzFhZjRhMTBiNWMxNjVhM2NlN2U4ZmYwYzYzNzE5OTA3MzRmZDNjMmM4MWVkZWZmZDQ2OGZhOGZlODliZmNmMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_3e54d2b9433740e1b86787dcefcc2e69",
+      "statement": "The update job iterates through candidate models in a fallback loop, running 'openwiki code --update --print' with each until one succeeds.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L63-L75",
+          "version": "repo-lines-v1:sha256:be5577c8fd9bc27a19ea8d166bd55bab8a6611672210ddfa7eaf0bf630aa3326:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNmMzMzZiYWM2NjQ3YzAxZDE2MTgwOWQyMTRiNzNmOWMwN2MzMmJmMGFjODUwZmRiY2I4ZDFjNjMzNGQ4NmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViNWFkMDI2YjIwMTBlNzc1N2I1ODg0MDA2NzkyY2M0MzlkOTk0OTEyOTExYWI2MGE3N2UxYjc5ZmUxYzg5MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3YzBmM2MxNWNiMTAzYjAyMGIwZDY1NWEyMjJlOGM1YjQ3MTMzOWYzYzFiOGRkYTI4MDgzZGNiNjAzZjk4YmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyOWI0ZTQ1NjcwMWZmMDM5YmU1ODMxYWNhMzJlODY5MmZiZDQ4ODdlNThhYmJhZjliYWFhMGUyODExYTgyNDcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8ee68efdcaec496abdba37a8bb59871d",
+      "statement": "Free OpenRouter models regularly return empty responses under load; the fallback loop continues to the next candidate instead of failing the entire run.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L63-L75",
+          "version": "repo-lines-v1:sha256:be5577c8fd9bc27a19ea8d166bd55bab8a6611672210ddfa7eaf0bf630aa3326:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNmMzMzZiYWM2NjQ3YzAxZDE2MTgwOWQyMTRiNzNmOWMwN2MzMmJmMGFjODUwZmRiY2I4ZDFjNjMzNGQ4NmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViNWFkMDI2YjIwMTBlNzc1N2I1ODg0MDA2NzkyY2M0MzlkOTk0OTEyOTExYWI2MGE3N2UxYjc5ZmUxYzg5MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3YzBmM2MxNWNiMTAzYjAyMGIwZDY1NWEyMjJlOGM1YjQ3MTMzOWYzYzFiOGRkYTI4MDgzZGNiNjAzZjk4YmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyOWI0ZTQ1NjcwMWZmMDM5YmU1ODMxYWNhMzJlODY5MmZiZDQ4ODdlNThhYmJhZjliYWFhMGUyODExYTgyNDcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f1aa50ed4dd2427eb576d2082808c810",
+      "statement": "The OpenWiki invocation uses environment variables: OPENWIKI_MODEL_ID (per iteration), OPENWIKI_PROVIDER=openrouter, OPENROUTER_API_KEY (secret), OPENWIKI_TELEMETRY_DISABLED=1, OPENWIKI_PROVIDER_RETRY_ATTEMPTS=10, LANGSMITH_ENDPOINT=https://eu.api.smith.langchain.com, LANGSMITH_API_KEY (secret), LANGCHAIN_PROJECT=openwiki, LANGCHAIN_TRACING_V2=true.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L76-L92",
+          "version": "repo-lines-v1:sha256:6ba7edb9d1740aa791d88c5ef5ffc0dd6661deb9fd8535fcc0c27f2d591190dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlNGY3MDFmNzVjOWQ5YTExOTRjNDQ5NjhmYThmODcyODFlY2FhY2Y5ZWRhY2M5N2NiMTFmYjA4ZmY4ZWM4MWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiZTdjZmZhZDI0YjQxNmYwYzViODg4OTUxMDAwYjY0MTRiMmM0ZTRkNmI2NWRiYTQ2ZGJjZTFlODM4NzM5MGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1MDkxNjMxOGYyODlmNDY0ODk0OWY4MzY0YjZhYjU3MzE4YzkwOTVlNTFkOTA0ZTg0NGJjNzEzYWI5ZTFlYmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhlZjYyNjZhZDkwYjA0YjA4ODg1N2ExOGY4NzBlZGQyYTI1YjhlNzc5ZjVmMWNlMDk4YWZlNzA3MmMzOTIyMmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5af65d365b8042669be5e6a0f1275f69",
+      "statement": "OPENWIKI_PROVIDER_RETRY_ATTEMPTS=10 is set to retry through 429 rate limit responses since the OpenRouter free tier allows 16 requests/minute.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L84-L86",
+          "version": "repo-lines-v1:sha256:78b760770e7ef3929869befce5ba90457ce8cfcf3f2ebdc0467535c728d10361:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjE4N2NlNGYwMmFiNGZjZjdjZDgxNzY4MzE1ODM0NWM3ZmM1MjQ5NzkzMTAxYzFhZWQ1Yzg0YzE0ZWIyODdmYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGI4N2E4YmFkOWI1OGIyMGY3ZDA0ODU0MGE5YmUzMTRjMTM1OTRiZjEyYjkwMTI2YmUyNjBlZGZiNDMyMTAwYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzlmYzdmNGQ5YWZjNzU2OWExMjVhNDk0ZGNlMjQ5ZmJjNmVmMDE2MTQ1NTgwNmNmODRlMWE4MjRiZjE5NTYzMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDJmNWI5NTM4MjE5YjBlYTQ5M2UwMThhZjVhMTA3OWM5ZGI2Njg4MWI5MzBmYzJkYThkMTYyZWJjZGI4ZjliZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b61f4b2555d147b88a34f71284e596c8",
+      "statement": "LANGSMITH_ENDPOINT is set to the EU region endpoint to avoid 403 retries from the US ingest API.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L87-L89",
+          "version": "repo-lines-v1:sha256:d2f5b9538219b0ea493e018af5a1079c9db66881b930fc2da8d162ebcdb8f9bf:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGM0YzZhZGQ2MmJiZDFlNWI4YjJiYTZlMDY5N2Q2ZGFiNTFhYTdjN2EwZTYwMzM0ZmE1MjJjOTc0OTlhMjY5ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGQxYzRmOTAxYjc0MTMzM2U5NTYxZmQzYWI2NTc2YTFkYjVkMTg1OTdhZDFlNGU1ZGY4YTU1YzAzZTllMTE2NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzhiNzYwNzcwZTdlZjM5Mjk4NjliZWZjZTViYTkwNDU3Y2U4Y2ZjZjNmMmViZGMwNDY3NTM1YzcyOGQxMDM2MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDM4NWQ0MGQxMDc2NGM3NmZjZTM5ZTNiODM4NjJkNzkzZGQ3NTI2NDZlY2YyOGI5OGExMjJiYTViYTg2MDM5MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c135696787874ae38d3fad52c6ac415d",
+      "statement": "The workflow creates a pull request with changes to the openwiki/ directory using peter-evans/create-pull-request@v8.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L94-L96",
+          "version": "repo-lines-v1:sha256:070b2777f12c228947890a4619bf8955b872fce6e33b4589e2167f71ba43b551:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDNjM2E2MmQ3NjBjMzAxMGUwNDQ2NDhkNTRmN2FkY2MwYTZjMzk1NTMyYzFiNTNkODkxZjZmZjJkYTczZDAzZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGQ4ZGY2MGQ1ZDFiZDE1ODA3OWJlMWY0ZWEyYzdkMWI4NTE0ZDM3ZTkxZjc2ZmZiYmUwNGM0NzkyM2JiMTkzZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTg0MTFhN2QyMzY0MTFhYmE2ZjZmNWJkMDFmNjQ2NTUwNDJlZTk1MmIzNTE4OTM4MWY5NTczMTRjMDY2OWEyZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODgxMWZiYWE5YjBlMWY4NDVhYjhhNDcxZTk0ZTZlYjIyYjdhMjEyODdlYzU0NWU5ZjViOWI1MDViZjY1MDBmOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_d9f537d0a99943d5ad2641ad4c19e59e",
+      "statement": "The checkout step uses persist-credentials: true to allow the PR action to push changes.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L38-L40",
+          "version": "repo-lines-v1:sha256:0d82aa454b914a1722e50d4d5fe333252b23c666ad1a01cae961a0918cd8370d:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmNkOGE5ZGUzZGNiYzUyYTZlMGY2ODUzYjg2OTA4ZjdhNTg3NzNlMWViYjc4ODNjYmJmMGE1ZmFkOWYxMjkwMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzMzNzMzNGFlYzBkY2IyNGU0MGUzYzIwZGMwOWQ1OWFmNjc0M2QwMjdkYmZmNTBjMWFjYTA4OTc0NzExNzY3MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTFlYjFlNjg1YWJiMGUzZDNiYzU3ZDU4YzBiNzBmYTBiZmMxMzkxZTEzOGQ5Yzk1ZjlhYTA2ZjYyNjcyYTkyMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWJhZjQwNzE2NTMzYTRmYmYyOTZlZTdiOGY3OWE1NzhhMTNhNWY0YTEyMzQ3ZDQ1YzU1NjE3ODAyNDRjYjZkNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_37675847f584492c8a200752ac935a47",
+      "statement": "The workflow requires contents: write and pull-requests: write permissions.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L12-L13",
+          "version": "repo-lines-v1:sha256:7c0a3a69d6953bc6f82e68b6b50b097ec6559ae82db33768d688aa2b659ff6ef:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTlkODAxNTRlZDQyZmM1Yzc3OWIxMzMxNTc4YjU4Yjg5YzgwMWVhY2U3NGYyNGNkNDhlYjRhMjM1Nzk0MGE5NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWMyYzc5NzM3ZjU2MjZiNDdlYjkyNzhhNzljZDY3MzlmMTk0M2I1NWU5OWY0YWI1NDNhODM2NTI5ZGMzZjc1MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTZmN2QzN2ZiMjk3Mzk5ZmVhMmE1Y2VmMWNjNDAyOGM4OTk3OWE5MDUwYTkyODU2ZjBkOTZlMWMxOGJhMTlhNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWRlY2MzYjA0ZDUyZjM4ZGI4NmM4ODE4NjhlM2NjNWM3MTI4OWViMTc2ZjY3MWNlZGY2ZjA5NzcxNWFjNGFlOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0f6edddd1cce4f77bfb49223b559ba4f",
+      "statement": "Node.js version 26 is used via actions/setup-node@v7.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L43-L46",
+          "version": "repo-lines-v1:sha256:a5205058575b3994f570b9977aedb0159cfa40b25b75c7c57cf1c829b4b2d2a3:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjIwNDkxYmRmYzAxYWZmMTViMzNiYjZhMTIwYzlkNDQxNWQ2ZTdhNjM3YmFjZTk2YTcyZWVkZWZlNjc2YzJiMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjY0MDRiMDhmZTYzMmQ2MjFiYjg5YWY1MjFkMmE0MGU5MDU3YzRmZWUxYmI3MDkyMjI2MzhjNDM4Yzc4M2VkMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWRiODBlYTAzMTFkZjNkODIwMmQxN2I4NDgxYjRiNjc4NWEzMjNhOGIxZTVlYTE4YmY2MTM0NTYwNWQzZTc2NyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8fcd3effbbf54925afad3339773ad01c",
+      "statement": "OpenWiki is installed globally via 'npm install --global openwiki'.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L48-L49",
+          "version": "repo-lines-v1:sha256:045f8949b6a80025a004a57271a6b0b6bf510a02df275f9f645bb3e6eba764f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjUyOTFlYWRmZThmMmUyMGM0NzRlOWY3NzRjN2RlMGFmYzkxYzE4ZTdkMWI0MDI4ODllYTdkYTU1Y2ZlM2RlZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGIzMmI5ODcyNjNkZjIxNjNlNzI2ZDQ4YjkyZjZmOTY1MTQ4Y2I2YjZkMjgzMTc5MTUxNGM5MzlmODM3YTE0MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjQ5MzIxNzdmYWQzNWI1YmZhN2QxYWEyM2JjZGJhYmIwZmY3OTZjNGFlYjIxMWJkMWRlMmQ2Mzk1MzZkZWRlZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTg1YmE3MWE2Zjk2NjliODYyZTA5ODAyZjhiOWEzMmNhYmExN2U0ZGM1YzA0MzU1NTIwNjc3YzFjMDU5YmYxMSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-26T14:51:28.771Z"
+  }
+}

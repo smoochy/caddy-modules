@@ -4,29 +4,52 @@ title: caddy-modules Architecture Overview
 description: High-level architecture of the caddy-modules repository covering the multi-stage Dockerfile build, xcaddy compilation, and GitHub Actions workflow orchestration.
 tags: [architecture, docker, caddy, xcaddy, github-actions]
 verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-29T11:22:45.470Z
+  - by: openwiki/0.9.0
+    at: 2026-11-26T14:51:28.771Z
 sources:
+  - id: openwiki-source-3cea697c8dad20efcc356a29
+    resource: repo://.github/workflows/build_cloudflare-modules.yaml
   - id: openwiki-source-42ef8192a0f869c58499e372
     resource: repo://Dockerfile-cloudflare
-generated: { by: "openwiki/0.5.2", at: "2026-09-17T09:53:58.385Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-26T14:51:28.771Z" }
 ---
 
 # Architecture Overview
 
 ## System Context
 
-```
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│  Upstream       │     │  Build Pipeline  │     │  Registries     │
-│  (Caddy, Addons)│────▶│  (GitHub Actions)│────▶│  (GHCR + Docker)│
-└─────────────────┘     └──────────────────┘     └─────────────────┘
-                               │
-                               ▼
-                        ┌──────────────────┐
-                        │  OCI Image Labels│
-                        │  (Traceability)  │
-                        └──────────────────┘
+The system comprises three primary domains: **Upstream Sources** (Caddy base image and addon repositories), the **Build Pipeline** (GitHub Actions workflow with dynamic discovery), and **Registries** (GHCR as canonical, Docker Hub as optional mirror). OCI image labels serve as the traceability mechanism linking builds across runs.
+
+```mermaid
+flowchart LR
+    subgraph UPSTREAM [Upstream Sources]
+        CADDY_BASE[caddy:latest\nbase image]
+        ADDONS[Addon Repositories\nGitHub APIs]
+    end
+
+    subgraph PIPELINE [Build Pipeline]
+        GH_ACTIONS[GitHub Actions\nbuild_cloudflare-modules.yaml]
+        DECIDE[Decide Step\nVersion Fetch & Compare]
+        BUILDX[Docker Buildx\nMulti-arch Build]
+    end
+
+    subgraph REGISTRIES [Registries]
+        GHCR[(ghcr.io\nCanonical)]
+        DHUB[(Docker Hub\nOptional Mirror)]
+    end
+
+    CADDY_BASE -->|crane digest/config| DECIDE
+    ADDONS -->|GitHub API\n/releases /tags| DECIDE
+    DECIDE -->|do_build=true| BUILDX
+    BUILDX -->|push manifests+layers| GHCR
+    GHCR -->| crane copy | DHUB
+
+    classDef upstream fill:#e8f5e9,stroke:#2e7d32;
+    classDef pipeline fill:#e3f2fd,stroke:#1565c0;
+    classDef registry fill:#fff3e0,stroke:#ef6c00;
+    class CADDY_BASE,ADDONS upstream;
+    class GH_ACTIONS,DECIDE,BUILDX pipeline;
+    class GHCR,DHUB registry;
 ```
 
 ## Core Components
@@ -57,185 +80,199 @@ FROM caddy:latest
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 ```
 
+**Key Properties:**
+| Property | Detail |
+|----------|--------|
+| Base builder | `caddy:builder` (official, includes Go toolchain + xcaddy) |
+| Base runtime | `caddy:latest` (minimal, non-root user, proper entrypoint) |
+| Addon declaration | `--with github.com/owner/repo[@version]` lines |
+| Comment handling | Lines starting with `#` ignored by build and workflow parser |
+| Version pinning | None — `xcaddy` fetches latest compatible at build time |
+| Go major versions | Path suffix `/v2`, `/v3` is part of module path (not a tag) |
+
 ### 2. GitHub Actions Workflow (`.github/workflows/build_cloudflare-modules.yaml`)
 
-Single `build` job with these phases:
+Single `build` job on `ubuntu-latest` with concurrency group `${{ github.workflow }}-${{ github.ref }}` (cancels in-progress runs on same ref).
 
-| Phase | Purpose | Key Steps |
-|-------|---------|-----------|
-| **Classify Changes** | Detect local file changes | `local_changes` step |
-| **Setup** | QEMU, Buildx, GHCR login | `setup-qemu-action`, `setup-buildx-action`, `docker/login-action` |
-| **Decide Build** | Fetch upstream versions, compare with published image | `decide` step (bash script) |
-| **Metadata** | Generate tags and labels | `docker/metadata-action`, `addon_labels` step |
-| **Build & Push** | Multi-arch build via Buildx | `docker/build-push-action` |
-| **Mirror** | Copy tags to Docker Hub (optional) | `crane copy` |
-| **Summary** | Write job summary | `cat /tmp/summary.md` |
+#### Trigger Conditions
+
+| Trigger | Paths Filter | Behavior |
+|---------|-------------|----------|
+| Push to `main` | `Dockerfile-cloudflare`, `.dockerignore`, workflow file | Build + publish |
+| Pull Request | Same as push | Validation build (no push) |
+| Schedule | Daily `0 3 * * *` (03:00 UTC) | Check upstream, build if changed |
+| Manual | `workflow_dispatch` with optional `force=true` | Build regardless of changes |
+
+#### Job Phases
+
+| Phase | Step ID | Purpose | Key Operations |
+|-------|---------|---------|----------------|
+| **Classify Changes** | `local_changes` | Detect local file changes | `git diff` base→head (PR) or before→current (push); outputs `image_inputs_changed`, `workflow_changed` |
+| **Setup** | — | QEMU, Buildx, GHCR login | `docker/setup-qemu-action@v4`, `docker/setup-buildx-action@v4`, `docker/login-action@v4` (GHCR via `GITHUB_TOKEN`) |
+| **Decide Build** | `decide` | Fetch upstream versions, compare with published image | ~400-line bash script: `crane digest/config` for base; GitHub API `/repos/{owner}/{repo}/releases` for addons; OCI label comparison; outputs `do_build`, versions, release notes, addon metadata |
+| **Metadata** | `meta` | Generate tags and base labels | `docker/metadata-action@v6`: tags `latest`, `caddy-<ver>` |
+| **Addon Labels** | `addon_labels` | Generate dynamic addon OCI labels | Reads `decide` outputs; produces `org.opencontainers.image.addon.N.name` + `.version` per discovered addon |
+| **Build & Push** | — | Multi-arch build via Buildx | `docker/build-push-action@v7`: platforms `linux/amd64,linux/arm64,linux/arm/v7` (PR: amd64 only); cache `type=gha` |
+| **Docker Hub Mirror** | `dockerhub_mirror` | Copy tags to Docker Hub (conditional) | `crane copy` for `latest` and `caddy-<ver>`; requires `DOCKERHUB_USERNAME` + `DOCKERHUB_TOKEN` secrets |
+| **Summary** | — | Write job summary | Cats pre-rendered `/tmp/summary.md` to `$GITHUB_STEP_SUMMARY` |
+
+#### Decide Step Detail (Core Logic)
+
+The `decide` step implements the build decision algorithm:
+
+```text
+FORCED = true if:
+  - workflow_dispatch with force=true
+  - PR with image_inputs_changed OR workflow_changed
+  - Push with image_inputs_changed
+
+CHANGED = true if:
+  - No current image exists (first build)
+  - Caddy base digest changed (crane digest caddy:latest != stored org.opencontainers.image.base.digest)
+  - Any addon version changed (GitHub API version != stored org.opencontainers.image.addon.N.version)
+
+do_build = FORCED OR CHANGED
+```
+
+**Upstream Version Fetching:**
+- **Caddy base**: `crane digest caddy:latest` + `crane config` → extract `org.opencontainers.image.version` label
+- **Each addon**: GitHub API `GET /repos/{owner}/{repo}/releases?per_page=10` → first stable release; fallback to `/tags`; fallback to latest commit SHA on default branch
+- **Release notes**: Fetched for Caddy and each addon; linked in job summary
 
 ### 3. Addon Discovery (Dynamic)
 
-The workflow **parses the Dockerfile** at runtime to discover active addons:
+The workflow **parses the Dockerfile at runtime** to discover active addons — no hardcoded list:
 
 ```bash
 grep -- '--with' Dockerfile-cloudflare | \
   while IFS= read -r line; do
-    # Skip commented lines
     [[ "$line" =~ ^[[:space:]]*# ]] && continue
-    # Extract addon: --with github.com/owner/repo
     [[ "$line" =~ --with[[:space:]]+([^[:space:]\\]+) ]]
+    addon="${BASH_REMATCH[1]}"
   done
 ```
 
-This means **adding a `--with` line automatically integrates it** into version fetching, labeling, and change detection.
+**Implications:**
+- Adding a `--with` line automatically integrates it into version fetching, OCI labeling, and change detection
+- Commented `--with` lines are ignored (enables easy toggling)
+- Go major version suffix (`/v2`) is stripped for GitHub API calls (not part of repo path)
 
 ## Data Flow
 
+The following sequence diagram shows the end-to-end data flow from upstream sources through the build pipeline to registries, with OCI labels as the traceability backbone.
+
 ```mermaid
 sequenceDiagram
+    autonumber
     participant GH as GitHub Actions
-    participant CR as crane (registry CLI)
+    participant CR as crane
     participant GHAPI as GitHub API
     participant DX as Docker Buildx
     participant GHCR as ghcr.io
     participant DH as Docker Hub
 
-GH->>CR: crane digest caddy:latest
-CR-->>GH: Base image digest
-GH->>CR: crane config caddy:latest
-CR-->>GH: Base image labels (version)
-GH->>GHAPI: GET /repos/{addon}/releases
-GHAPI-->>GH: Addon versions + release notes
-GH->>CR: crane config published image
-CR-->>GH: Current OCI labels (base digest, addon versions)
-GH->>GH: Compare digests/versions
-alt Build needed
-    GH->>DX: docker buildx build --push
-    DX->>GHCR: Push multi-arch image
-    GH->>CR: crane copy to Docker Hub
-    CR->>DH: Mirror tags
-end
-GH->>GH: Write job summary
+    Note over GH: Trigger (push/PR/schedule/manual)
+    GH->>GH: Classify local changes (local_changes)
+    GH->>CR: crane digest caddy:latest
+    CR-->>GH: base digest
+    GH->>CR: crane config caddy:latest
+    CR-->>GH: base config (labels with version)
+    GH->>GH: Parse Dockerfile --with lines
+    loop For each addon
+        GH->>GHAPI: GET /repos/{owner}/{repo}/releases
+        GHAPI-->>GH: Latest release/tag/commit
+        GH->>GHAPI: GET /repos/{owner}/{repo}/releases/tags/{tag} (notes)
+        GHAPI-->>GH: Release body
+    end
+    GH->>CR: crane config ghcr.io/...:latest (if exists)
+    CR-->>GH: Current image config (OCI labels)
+    GH->>GH: Compare versions (decide step)
+    alt do_build == true
+        GH->>GH: Generate tags (meta) + addon labels (addon_labels)
+        GH->>DX: build-push-action (multi-arch)
+        DX->>GHCR: Push manifests + layers with labels
+        opt Docker Hub enabled
+            GH->>DH: crane copy ghcr.io/... -> docker.io/...
+        end
+    else
+        GH->>GH: Skip build, write "no changes" summary
+    end
+    GH->>GH: Write job summary (versions, changelogs, tags)
 ```
 
-## Adding a New Image Variant
+**Caption:** End-to-end data flow from upstream version discovery through build decision, multi-arch build, and registry publishing.
 
-Each variant is self-contained with exactly two files:
+## OCI Labels as Traceability Mechanism
 
-| File | Purpose |
-|------|---------|
-| `Dockerfile-<name>` | Declares modules via `--with` lines |
-| `.github/workflows/build_<name>.yaml` | Builds, tags, publishes the image |
+Every published image carries a comprehensive set of OCI labels that enable **cross-run change detection** and **reproducible deployments**:
 
-**Steps to add a variant:**
-1. Copy `Dockerfile-cloudflare` → `Dockerfile-<name>`, adjust `--with` lines
-2. Copy `.github/workflows/build_cloudflare-modules.yaml` → `.github/workflows/build_<name>.yaml`
-3. Update hardcoded image name in workflow (`ghcr.io/smoochy/caddy-<name>`)
-4. Update `file:` reference from `Dockerfile-cloudflare` to `Dockerfile-<name>`
-5. Add to Available Images table in README.md
+### Base Image Labels (Static + Dynamic)
+
+| Label | Source | Purpose |
+|-------|--------|---------|
+| `org.opencontainers.image.base.name` | Hardcoded (`caddy:latest`) | Identifies base image |
+| `org.opencontainers.image.base.tag` | From base image `org.opencontainers.image.version` | Semantic version for tagging |
+| `org.opencontainers.image.base.digest` | `crane digest caddy:latest` | Immutable content hash for change detection |
+| `org.opencontainers.image.base.version` | Same as base.tag | Redundant for tooling compatibility |
+
+### Addon Labels (Dynamic, Per-Discovered-Addon)
+
+For each addon discovered from Dockerfile `--with` lines (index `N` starting at 0):
+
+| Label | Example |
+|-------|---------|
+| `org.opencontainers.image.addon.N.name` | `github.com/caddy-dns/cloudflare` |
+| `org.opencontainers.image.addon.N.version` | `v1.2.3` |
+
+Generated in `addon_labels` step — **no hardcoded addon count**.
+
+### Legacy Label (Backward Compatibility)
+
+| Label | Value |
+|-------|-------|
+| `org.opencontainers.image.cloudflare.version` | Cloudflare DNS module version (addon 0) |
+
+Kept for existing tooling that may read this specific label.
+
+### Standard OCI Labels
+
+| Label | Value |
+|-------|-------|
+| `org.opencontainers.image.title` | `Caddy with additional modules` |
+| `org.opencontainers.image.description` | `Caddy web server image with several additional modules baked in` |
+| `org.opencontainers.image.url` | `https://caddyserver.com` |
+| `org.opencontainers.image.documentation` | `https://caddyserver.com/docs` |
+| `org.opencontainers.image.licenses` | `MIT` |
+| `org.opencontainers.image.source` | `https://github.com/smoochy/caddy-modules` |
 
 ## Extension Points
 
-| Extension | Location | Mechanism |
-|-----------|----------|-----------|
-| New Caddy module | `Dockerfile-<variant>` | Add `--with github.com/owner/repo` line |
-| New image variant | Repository root | Two-file pattern above |
-| Build trigger | Workflow `on:` section | Push paths, schedule, workflow_dispatch |
-| Registry target | Workflow `registries` step | Add secrets, extend mirror logic |
-| OCI label | Workflow `addon_labels` / `build-push` | Dynamic label generation from discovered addons |
+| Extension | Mechanism |
+|-----------|-----------|
+| **Add a module** | Add `--with github.com/owner/repo` line to Dockerfile; workflow auto-discovers |
+| **Pin addon version** | Append `@v1.2.3` to `--with` line (xcaddy syntax) |
+| **Add registry** | Extend `registries` step + mirror step; add credentials as secrets |
+| **Change platforms** | Modify `platforms` in `build-push-action` step |
+| **Add build args** | Extend `build-push-action` with `build-args`; propagate to Dockerfile |
+| **Custom triggers** | Add `on:` events (e.g., `repository_dispatch` for external triggers) |
 
 ## Invariants
 
-- **Minimal final image**: Only the custom Caddy binary is copied; no build tools in final layer
-- **Reproducible builds**: Same Dockerfile + same base digest + same addon versions = identical binary
-- **Dynamic addon tracking**: Workflow discovers addons from Dockerfile, no hardcoded list
-- **Multi-arch by default**: `linux/amd64`, `linux/arm64`, `linux/arm/v7`
+| Invariant | Enforced By |
+|-----------|-------------|
+| Two-stage build: builder compiles, final only copies binary | Dockerfile structure |
+| Addons declared via `--with` lines only | Dockerfile + workflow grep parser |
+| Commented `--with` lines ignored | Build (Dockerfile) + workflow parser both skip `#` |
+| Every build publishes `latest` + `caddy-<ver>` tags | `metadata-action` tag config |
+| OCI labels capture base digest + all addon versions | `decide` + `addon_labels` + `build-push-action` labels |
+| Docker Hub mirror only when secrets configured | `registries` step condition |
+| PR validation builds never push | `push: ${{ github.event_name != 'pull_request' }}` |
+| Concurrency cancels in-progress runs on same ref | `concurrency` group with `cancel-in-progress: true` |
 
-## Key Responsibilities and Control Flow
+## Related Pages
 
-### Build Decision Logic (`decide` step)
-The workflow performs a sophisticated change detection:
-
-1. **Local Change Classification**: Detects if Dockerfile, `.dockerignore`, or workflow files have changed
-2. **Upstream Version Fetching**: 
-   - Gets Caddy base image digest and version from `caddy:latest`
-   - For each discovered addon, fetches latest release tag or commit SHA from GitHub API
-3. **Change Comparison**: 
-   - Compares current published image digest/version with upstream
-   - Determines if rebuild is needed based on forced conditions or actual changes
-4. **Build Trigger Decision**: Only proceeds with build if changes detected or forced
-
-### Multi-Stage Build Process
-1. **Builder Stage**: `xcaddy` compiles Caddy with all declared addons, statically linking them
-2. **Runtime Stage**: Copies only the compiled binary to minimal Caddy runtime image
-3. **Layer Optimization**: Final image contains zero build tools, only the custom Caddy binary
-
-### OCI Labeling Strategy
-- **Static Labels**: Base image metadata (title, description, source, etc.)
-- **Dynamic Labels**: Per-addon name/version for change tracking
-- **Traceability Labels**: Base digest, version, and complete addon versions for reconstruction
-- **Legacy Compatibility**: Preserves `org.opencontainers.image.cloudflare.version` for backward compatibility
-
-### Publishing & Mirroring
-- **Primary Registry**: GHCR with two tags (`latest` and `caddy-<version>`)
-- **Mirror Strategy**: Optional Docker Hub mirror when credentials are configured
-- **Change-Based Publishing**: Only publishes when upstream components actually change
-- **Multi-Arch Support**: Builds for amd64, arm64, and arm/v7 using Buildx
-
-## Failure Handling and Invariants
-
-### Build Failure Recovery
-- **Local Changes**: Pull request validation runs builds even if no upstream changes
-- **Force Override**: Manual workflow dispatch can force rebuild regardless of state
-- **Schedule Check**: Daily upstream checks ensure timely updates
-
-### Data Consistency Invariants
-- **Deterministic Builds**: Same inputs always produce identical binary
-- **Label Consistency**: All labels accurately reflect the built image contents
-- **Change Detection**: Precise comparison prevents unnecessary rebuilds
-- **Multi-Arch Integrity**: All platforms receive the same binary content
-
-## Extension Mechanisms
-
-### Adding New Modules
-1. Add `--with github.com/owner/repo` line to Dockerfile
-2. Workflow automatically discovers and processes
-3. No manual updates to workflow needed
-
-### Adding New Variants
-1. Copy Dockerfile and workflow files
-2. Customize module set for specific use case
-3. Each variant is completely independent
-
-### Extending Registry Support
-1. Update `registries` step in workflow
-2. Add new secrets for target registry credentials
-3. Extend mirror logic as needed
-
-## Testing and Validation
-
-The system validates through:
-
-1. **Local Build Testing**: `docker build -f Dockerfile-cloudflare .` for syntax and basic functionality
-2. **GitHub Actions Testing**: PR validation runs complete build pipeline
-3. **Label Validation**: Verification of all OCI labels contain expected values
-4. **Multi-Arch Testing**: Buildx creates platforms for amd64, arm64, and arm/v7
-5. **Change Detection Testing**: Verification that upstream change detection works correctly
-
-## System Boundaries and Integration Points
-
-### External Dependencies
-- **Caddy Upstream**: `caddy:latest` builder and runtime images from caddyserver/caddy
-- **Addon Modules**: Go modules from various GitHub repositories
-- **Registry Services**: GHCR and optionally Docker Hub
-- **CI/CD Platform**: GitHub Actions for automation
-
-### Internal Component Interfaces
-- **Dockerfile**: Declarative interface for module selection
-- **Workflow Scripts**: Procedural interface for build decision and version fetching
-- **OCI Labels**: Structured data interface for traceability
-- **Build Outputs**: Container image interface for downstream consumption
-
-### Data Flow Boundaries
-- **Build Context**: Limited to repository root for security
-- **Registry Access**: Limited to specific image repositories
-- **GitHub API Rate Limits**: Respects API quotas with fallbacks
-- **Network Access**: Required for fetching upstream versions
+- [Cloudflare Modules Integration](../integrations/cloudflare-modules.md) — Module details and configuration
+- [Dockerfile Structure](../operations/dockerfile.md) — Build stage, xcaddy, addon declaration
+- [Image Tags & Publishing](../operations/image-tags.md) — Tag strategy, OCI labels, mirror flow
+- [Build Pipeline Workflow](../workflows/build-pipeline.md) — Phase-by-phase workflow documentation
+- [Quickstart](../quickstart.md) — Getting started with the image

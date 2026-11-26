@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:1b8bc4d869bd13c3bf915a9dc9114e989cb7324e83de462aec84f57584c91f3c",
+  "claims": [
+    {
+      "id": "claim_98fd03b8b66549368032bff955dac1cb",
+      "statement": "The Dockerfile uses two official Caddy base images: caddy:builder for the build stage and caddy:latest for the runtime stage.",
+      "evidence": [
+        {
+          "resource": "repo://Dockerfile-cloudflare#L1-L5",
+          "version": "repo-lines-v1:sha256:1aa8f74de9355a82f1d20d45c9940ca8a2e6b65ecdca4c1835f75f83dd179d9c:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzM1ZjA2ZDk1ZGViZDFjZGRlZjBmOWI4MzBlM2IyNTMzNjViZWZlZDVlZjg5MDcwMTU4MGNhMmM4ZTZjMWYzNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGE3Y2UzYTRlNDEzZjEyNGE2NzQ4ZWVkYWVmNTZiN2NhYTU2NjI1MGE5ZTkzNjc3M2VlYWIwMTA0MWYxODdlOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWFlZTBlMGYwYmYzM2U2NGQ3OTM2NzY3MzcyNDYzNTFkZjEwMzZlNTAzNzBmNDExNzYxMWNhN2UzZTkzYTg1NyJ9"
+        },
+        {
+          "resource": "repo://Dockerfile-cloudflare#L8-L10",
+          "version": "repo-lines-v1:sha256:dfccd2343ff0cebd2c2e326b87d8d226bac5d6d4a82292d7e5fe9ac79c9c8472:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDYxOWJhOWJmYTA1Mjk1NmUxNGY0NWYxMWM5ZDE0NjM4NDIxOTlkZjU2MjRhNDZiODI3ZjhiM2NmYjY3MzJmMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDU4NDkxZGU4YjE0MThmOTZiYzg1ZDBkZWEwNGMwYWY1YWIwYWMxZWVjMWEzYjYxMDM3M2Q4ZmIyYzk4NzFjMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjk2ZmE4NzIwOWVjYWFjYTQxYzk0ZWE3YWJiOWI5ZmVhNDUwYzNiYWJkYWNlMjdlOWY0NzlkNjA1YjY3YjViOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a9a63656a5ce4c419be4a0bf22d7e9c2",
+      "statement": "The workflow resolves caddy:latest to a concrete digest at build time and records it in the output image label org.opencontainers.image.base.digest.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L106-L112",
+          "version": "repo-lines-v1:sha256:f7565c181ad8291f33a5fb34abf3203923b83d96395366f5a9414f924eed051a:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDViNGYxNGRjZjg5ZjE0NzBjNTJhMjRjNDFkMDBlNzgzNGRmMGYxODVmNmI4MjZmNTJiZTRkODQ2YmI1ZTdlOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2Y1MzBiZDRjZDQxMmNiNjVmZGVjZjBjYjQzNzg1ZmRkMDViYmZiYzlhNGQ0ZDMzZGUwNmIxZWQxZmEzMWViNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjk4MzU2MDBmNWJjZTZkYmM1YWNkOTRlYzE3ZTI0ZjViYzIyMGYwMzk5NGMzZjljNjQ5MTIwNzdlZjEyMWIwOCJ9"
+        },
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L345-L352",
+          "version": "repo-lines-v1:sha256:4f51cd1fb7b89cc517efabce68f0f2e969b846b7e349df86c2cc931682e34f6d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmY1NTk3OWNlNzMwMjAzM2U2YjJmZDdkODhmNTM3YTNiOGUwOTFlYTMwNWM4MTFmZmExMjc0YmY1NzY0ZWE1ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzNhMmFmMTNiMGJiZGZkM2VlNjJhMGExNWQ1YjhhNjc1MmVmYWExOGUzNWE4YzE2M2EzMDNiODcwODMzNjlmZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGFjZDliNjMxMGYyZGI3NTlhMTJkMmM2MDJlNWVkMTA5NjAwZDM3NTdmYmZlYWMyOTYwNWEwYzcxZmEyNmNkZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_670d4c4e20a04a8c9bba5e6ee417f09a",
+      "statement": "Four Caddy modules are fetched from public GitHub repositories at build time via xcaddy: caddy-dns/cloudflare, WeidiDeng/caddy-cloudflare-ip, fvbommel/caddy-combine-ip-ranges, and lucaslorentz/caddy-docker-proxy/v2.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L127-L145",
+          "version": "repo-lines-v1:sha256:1e3c891d13364a350ff028d1a0ffa4ef1a8eb764740b4e5f5099f79ed9b37b95:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiNGExZWQ2MzI0ZDhlMWVjNTM4YmM0ZTVlMjNiMWI2YzE0NDcxMGIyNzFmNzlhNTkzZjc0NDY4ZDJkODg5MmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNmRjMDE0MDZmMDVhOWI5MjQ1MjVjNGQ3MWU0MzM2YmRjMzE4YzhlYTcyNjEzOThhZTRkYTczNjNjMmVkOWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1MWYyMWNmNGJjY2IzMTI4Y2NlZGM5OTFkNWMzMmVhMzQ2NmM4ZjRhM2RlMmM1NmY2NWVkNThjMzQwOTFiZjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4OThjMGY4YzJjOThiZTUyNTZmYzBkMjA3YjdiMTQ2NTRkMjk3NDJlZWMxODkwOWJiOTQ1MWVkZjNiMjExZDgifQ"
+        },
+        {
+          "resource": "repo://Dockerfile-cloudflare#L4-L7",
+          "version": "repo-lines-v1:sha256:77b5019104eff02b45d0eaef8dcdbd143dc0f925c8ee840d6b2cd0f7e4c1333f:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzliZGJiNmVhZDk3ZDhkNTNmOTc4MDAwMjhmNGE1YWFiZjZjNzAyNGYwMjEwMGYyMzlmZTI2MDc3NTA3YjdjMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjk5ZmY4ZWQwNGQxZDVlOWI1YjUzYjk4NDUwYTkxN2U2Y2I1ODlkNTUxNzJhNjkzOGJiYzk5YTRkZDQxMjY5MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzNiNGNiMjlkZTNlZWQ0MjU2ZjIxNzI0YmRkOTMxNWFhODBiYzk5OWUyNTBmOGMyZTlmM2E4ZTM5OWJiOWE2NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGZjY2QyMzQzZmYwY2ViZDJjMmUzMjZiODdkOGQyMjZiYWM1ZDZkNGE4MjI5MmQ3ZTVmZTlhYzc5YzljODQ3MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c84ed9c9ce004a5f9c40f3d37dc75e1d",
+      "statement": "The workflow does not pin addons to fixed versions in the Dockerfile; instead it resolves the latest stable release at build time via the GitHub API and records resolved versions in image labels.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L127-L145",
+          "version": "repo-lines-v1:sha256:1e3c891d13364a350ff028d1a0ffa4ef1a8eb764740b4e5f5099f79ed9b37b95:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiNGExZWQ2MzI0ZDhlMWVjNTM4YmM0ZTVlMjNiMWI2YzE0NDcxMGIyNzFmNzlhNTkzZjc0NDY4ZDJkODg5MmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNmRjMDE0MDZmMDVhOWI5MjQ1MjVjNGQ3MWU0MzM2YmRjMzE4YzhlYTcyNjEzOThhZTRkYTczNjNjMmVkOWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1MWYyMWNmNGJjY2IzMTI4Y2NlZGM5OTFkNWMzMmVhMzQ2NmM4ZjRhM2RlMmM1NmY2NWVkNThjMzQwOTFiZjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4OThjMGY4YzJjOThiZTUyNTZmYzBkMjA3YjdiMTQ2NTRkMjk3NDJlZWMxODkwOWJiOTQ1MWVkZjNiMjExZDgifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L175-L215",
+          "version": "repo-lines-v1:sha256:415a69ea4c94f4d7974b1d6bdf7ac301fb7490cb55113bfafefb58626508aa78:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5MDI3NjkyYTE1ZWQ0YWZiMWRjODgxMjIwOGM3YTNlZDNhN2RkYWVjNDZhN2UwYzZjM2U2YzExNmRiM2VjY2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzNmIyMGVlNGU4MDkwODkwMjFhODVhNTU2ZjFjMDQwNzkzYTU3NTgxOGUwN2Y1ODc3ZmM1YWJiOTBiZmMwMzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUyMDBiYTJiMmU2YTUzNmE5MWExNDJmZTQzZGExNzgzYjY4ZTJiNDVjN2VjYmY0NzIyMDE5YjY1NmJkYmIzNzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYwYmU2YWVmZGEyZWFhMzQxZTM5MzE3ZTk0N2Q3OWJlNWZmYjEzOTRjNGEwNGEwNDViYTU4ZWY1NDNjOTY2NzkifQ"
+        },
+        {
+          "resource": "repo://README.md#L163-L178",
+          "version": "repo-lines-v1:sha256:20fb7006d6d88da41070be05ad80f909d800a797e3e15330228347f938340b5f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4ZTA5YzQ5Y2U4NzM2Y2FmYmEwNjAzODNlNmYxZjJmODhhOGYxYzk3NGM5ZWEzODMxNDZhMGZkODhhZWVmMTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlYWJlMjRhMDI5NWFiYTVjMDM2MzQ2YTUzYmFlN2VlMGMwZWQ0M2Q4MjczY2E0YjU5NTE5MTBlYmE5YjM1ZTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUyOWZmZGEwYzNhNmEyNDA4ZmRmMmY0YzJhOTE1MjUwM2VkOTUyODlkZTQ2NmVkMmM1MjUwOWMyYjdlODJlM2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzMjZiYmJhNDU2NTBmMjU4YzY1ZjRlYTAwYjQyYTU1YWYyZjcxZWQ5NmU2ODZjYzA1NDQwMDAxNzJmZjQyZmUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_808ff26ab4324a19a417a7d05924537c",
+      "statement": "GITHUB_TOKEN is used for GHCR authentication (packages: write permission) and for authenticated GitHub API calls in the decide step to fetch release metadata.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L103-L108",
+          "version": "repo-lines-v1:sha256:21a72cde82d41caa1ddcba8f0f0922c330e32fa4ca09a5dd6b82be0cffb2dcd1:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTJhNzUwYWNhMzZjYTZlOTc0ZmI2ZDRmNmMxMjJiODU0ZDlmOTBjMjE1MzhmMzM1MDUwODYwMTE0MzlhNDk2YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2RhN2U0YmI0OTVlOWRiOTQ5NzIyZTk5YTkwN2NjNzU5NzY2M2E3NGQ4NWM5NTViMTBlOTYxMDJhMDg5MWVmZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDk2ZGIzYjE2NjllYTZjYmI4N2U4YzU5YTY5YjhkMmEwOTc1OWRhNGM4NjBlNzA2YTRlMzQ1NjE0YjhjZmQ1MiJ9"
+        },
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L17-L20",
+          "version": "repo-lines-v1:sha256:21cde243433beb1e87f4046770c35472b10a6c1caaee10d74f8dde5b117631d5:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWI3NmY1YTYwOWMwZTA5M2JlYzIyNjM1ZTYzOTJiYTk0OTNjODUxOTgyZTJkYzkxM2Q1MTUzZWEyNTZiOGQzYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjBkMzBlMGUwNDJlZTQxYTliYjExNDhmZWNmMWY0MWM5YTE0ODE3Y2EyMTNiYTI3NjgyZTE2MjNmYzk2YTM1NyJ9"
+        },
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L70-L75",
+          "version": "repo-lines-v1:sha256:1609894178cb04d2d9b7f39d6e51e7f9fdccb8e45f51571bae3738ed8ab60955:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmY1NTk3OWNlNzMwMjAzM2U2YjJmZDdkODhmNTM3YTNiOGUwOTFlYTMwNWM4MTFmZmExMjc0YmY1NzY0ZWE1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmE1MTdhOTI3Mzc4YmNhMzdmNGRkMTU0YWUzY2M5ZGNjNDY3NjQzZGJhOTIwMDUwYjJhZmIzM2RjNDUwMjczYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGQxYmU4NWYyOWVmYmNkYTNiY2U2OTIwMjA3MjJmZTJmN2I2MjY0MTM1Njc4ZmI0OTEyODJiMDZhMGRkZjVmYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4ef5f0d1a4d84b7e89f3f634263ae333",
+      "statement": "DOCKERHUB_USERNAME and DOCKERHUB_TOKEN are optional repository secrets that enable mirroring to Docker Hub; if either is missing the mirror step is skipped silently.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L623-L645",
+          "version": "repo-lines-v1:sha256:cfc9e7208c6ff9c645feb146020e706ec54c2ce94e78dcc026065a6a97df69e3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0ZDg1MjdiOTM4YmJjZDI1N2QzNzhhZTA0YjdhZTAzN2I2ODJiYjc5MmE0MDRiNTI0NWI3YjBhMThjNTZmNWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlYmQzOThhNjE2MTg2MTg0MDliNzQ4OTM2ZGY3MGRmNmI4OTEwOGFkYTliM2ViNDk5YzBlZjY2NWNmZDhlZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyMzM4OGU1MmRjYWI3ODVlMTE1ZjRkMmNjZGJlODY2OTE5ZDgzYzIxNjhiMzFiZjM4ODc0OTYxNTM5YmM5NmEifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L77-L92",
+          "version": "repo-lines-v1:sha256:102cefccdaa2b4771b503ccc0cfc3eb002bd27ee709d47d478b3c91be7981212:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmYTQ4ZGJjNTRiYWI0YjM2ZTMyYmVhN2Y2ZmI3MWJjMjNiYjNkYmQ3YzY5MDk3ODljMmIwZDJlZTI0OGM3MGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmN2E4YjZmODAwMTIxZTZhMzEyZTljZjVhNTJmOTc0MDg3MDMxYTNkN2EzZWM1MmJlNjk3MGZkMDYxNjIwZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMyOGIzZGFmMjI2OWM1ZjRjYzdjNzBhZmRiYTdhZjA5NDBiODJkODZlZDNhODY2N2QzZTIyZjBjNDQwZDY1NDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f29f6d5642954b1cae32c7abb7912858",
+      "statement": "OPENROUTER_API_KEY is a repository secret used only by the separate openwiki-update.yaml workflow and is not available to the build workflow.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L1-L25",
+          "version": "repo-lines-v1:sha256:be2f6f3be4edf7340ab7f3e0e2f40f97a1b491e8a1a11d394163e8548c515226:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZTVjODczMzdjN2QyYTYzMDhiMWNhMDFjNGU1NTYwODI0YmVlMjhjOWFlNjE2ZDQ4ODdjZTE3NWFlYjIxOTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0MTZhYzY1MmZlMDZmNTczNGI0OWI5MTE2OTYzNjFiYjYxZjBjODI3Nzg5YTQ3NmFhNzA1MmM0YjNlM2FmMDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyY2IwMTNiMjZhYjZkZDE1ZGQ4NjZjNTdkYWIzZmZiODk3MzM0YTIxZDVlZmFiMmZjNjdmOGViOWUyMWFiNzAifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yaml#L88-L92",
+          "version": "repo-lines-v1:sha256:5096b85717a6b52d15e8e09051747bebf06f276be6d38926acd8c9ca2cef2328:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTBkYjFmOGNlOTI3NzFkMzgxNGU0MWQ2MDc3YjJhNDY2MTI1Njc2NjdkNzgwYmQyYzAzNTYwMDhlMzBhMmZmMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2JlN2NmZmFkMjRiNDE2ZjBjNWI4ODg5NTEwMDBiNjQxNGIyYzRlNGQ2YjY1ZGJhNDZkYmNlMWU4Mzg3MzkwZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTRjMzMwZmViYTU3ZTYyYmVhMzI0MmMzNGE0ZjZiNmYxNGZkNjcwYjc5YWE1YTQwZDk3N2NhODdlM2JkOThhMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGVmNjI2NmFkOTBiMDRiMDg4ODU3YTE4Zjg3MGVkZDJhMjViOGU3NzlmNWYxY2UwOThhZmU3MDcyYzM5MjIyYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_80417c3272bd411b9752e93e2667bd4e",
+      "statement": "The workflow pushes multi-arch manifests (linux/amd64, linux/arm64, linux/arm/v7) to GHCR on push, schedule, and workflow_dispatch events when do_build is true.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L555-L570",
+          "version": "repo-lines-v1:sha256:539f878d14aec492029f0ae4a185be4056f888e6689e78044b58214efde6aa74:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwZDZmMWU4MzM2ZjlhYjYyNDM5OTIyMWJhYzY1OGEzNjYwMTVmN2ZlYTNjNzA1NDhiOTAwOGI2MTY3ZjY3ZGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiYzZlNmE5OTYyMjdiMDc4MjkyNjczMDc4ZmU2YTIwMmU0MjQ4MDNiZmZiY2Q3MDUxZWJhZTdkNDBlYmE5ZGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2NTk2ZDY4M2M0OTA4MTZmZmUxYzg3ZjRkZDA5ZGE5MjJmOGMxM2I0ZDAxOWYzYWFjMGY1MzNiMzg3OWVkZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE0Nzc5OTJiMjE2M2E2ZWU4OThhMTdmZjFmMTQzODliMmViY2U4ZDkzZmE4MTA3NmU3NTgyOGJlNjVjZWNhNTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5dbe5cf594f641cdb9b1b3971e663796",
+      "statement": "The Docker Hub mirror uses crane copy to replicate tags without re-building, and only runs on non-PR events when Docker Hub secrets are configured and do_build is true.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L623-L645",
+          "version": "repo-lines-v1:sha256:cfc9e7208c6ff9c645feb146020e706ec54c2ce94e78dcc026065a6a97df69e3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0ZDg1MjdiOTM4YmJjZDI1N2QzNzhhZTA0YjdhZTAzN2I2ODJiYjc5MmE0MDRiNTI0NWI3YjBhMThjNTZmNWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlYmQzOThhNjE2MTg2MTg0MDliNzQ4OTM2ZGY3MGRmNmI4OTEwOGFkYTliM2ViNDk5YzBlZjY2NWNmZDhlZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyMzM4OGU1MmRjYWI3ODVlMTE1ZjRkMmNjZGJlODY2OTE5ZDgzYzIxNjhiMzFiZjM4ODc0OTYxNTM5YmM5NmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c9489e6cca2841aea4fd7f1c3fd9ae55",
+      "statement": "Pull requests run docker/build-push-action with push: false and a single platform (linux/amd64); the real multi-arch push to GHCR only occurs on push, schedule, or workflow_dispatch events after merge.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L555-L570",
+          "version": "repo-lines-v1:sha256:539f878d14aec492029f0ae4a185be4056f888e6689e78044b58214efde6aa74:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwZDZmMWU4MzM2ZjlhYjYyNDM5OTIyMWJhYzY1OGEzNjYwMTVmN2ZlYTNjNzA1NDhiOTAwOGI2MTY3ZjY3ZGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiYzZlNmE5OTYyMjdiMDc4MjkyNjczMDc4ZmU2YTIwMmU0MjQ4MDNiZmZiY2Q3MDUxZWJhZTdkNDBlYmE5ZGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2NTk2ZDY4M2M0OTA4MTZmZmUxYzg3ZjRkZDA5ZGE5MjJmOGMxM2I0ZDAxOWYzYWFjMGY1MzNiMzg3OWVkZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE0Nzc5OTJiMjE2M2E2ZWU4OThhMTdmZjFmMTQzODliMmViY2U4ZDkzZmE4MTA3NmU3NTgyOGJlNjVjZWNhNTQifQ"
+        },
+        {
+          "resource": "repo://docs/assembly-line/2026-08-24-workflow-verification/plan.md#L35-L45",
+          "version": "repo-lines-v1:sha256:8df0c3afde058f2d4b314b4e682657187ad9841ff5620587879f459959ba03fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1NTkzYWQzNDQxY2IzNjE3ZjdhNzE3YmE3YjVjMjU3MDNjMzg3ZGE1ZGVmN2I5OTgzODcxM2EzODU5OWZlZDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0ZDg5YmVjYjZhN2MyNWM1YWE5OTU4ODc0OWJiMmVhNTY0ODU0N2Y0YWQ3MWQ5Y2M5YTJmM2YwMmIwYmMyNzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5NzJkYzgzZmMyNGVkMGQ1MTk2MTM3OWM3OWQ0Mzc3NzU1MzFmZjBmN2M0M2ZlYjQzNjk3MTY4ODBlYzQzNDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e43ad0e5ca124079995244122f1bf090",
+      "statement": "The crane copy mirror to Docker Hub never executes on pull requests; it only runs on non-PR events when Docker Hub secrets are configured and do_build is true.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L623-L645",
+          "version": "repo-lines-v1:sha256:cfc9e7208c6ff9c645feb146020e706ec54c2ce94e78dcc026065a6a97df69e3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0ZDg1MjdiOTM4YmJjZDI1N2QzNzhhZTA0YjdhZTAzN2I2ODJiYjc5MmE0MDRiNTI0NWI3YjBhMThjNTZmNWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlYmQzOThhNjE2MTg2MTg0MDliNzQ4OTM2ZGY3MGRmNmI4OTEwOGFkYTliM2ViNDk5YzBlZjY2NWNmZDhlZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQyMzM4OGU1MmRjYWI3ODVlMTE1ZjRkMmNjZGJlODY2OTE5ZDgzYzIxNjhiMzFiZjM4ODc0OTYxNTM5YmM5NmEifQ"
+        },
+        {
+          "resource": "repo://docs/assembly-line/2026-08-24-workflow-verification/plan.md#L35-L45",
+          "version": "repo-lines-v1:sha256:8df0c3afde058f2d4b314b4e682657187ad9841ff5620587879f459959ba03fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1NTkzYWQzNDQxY2IzNjE3ZjdhNzE3YmE3YjVjMjU3MDNjMzg3ZGE1ZGVmN2I5OTgzODcxM2EzODU5OWZlZDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0ZDg5YmVjYjZhN2MyNWM1YWE5OTU4ODc0OWJiMmVhNTY0ODU0N2Y0YWQ3MWQ5Y2M5YTJmM2YwMmIwYmMyNzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5NzJkYzgzZmMyNGVkMGQ1MTk2MTM3OWM3OWQ0Mzc3NzU1MzFmZjBmN2M0M2ZlYjQzNjk3MTY4ODBlYzQzNDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8e4c9a3ca1424ff6bd990c5180b0afd0",
+      "statement": "No registry writes occur from pull request runs; the Login to GHCR step is skipped for external PR forks.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L67-L75",
+          "version": "repo-lines-v1:sha256:69efd960d7bb91cf9f0393ec77be6156b3e98df08ca63d77863fdc160930f21b:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzI5ZTUyNDg1Y2U5ZGNiNmU2YTBhNjRiZWQyNmU4NzI5MmI3MTllMDI2N2Q4ODNmNmU5ZDM2NTBhNjMyNTUxYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDJhZDdiZmZkYzg3ZGIwYTg2YmZmODk4ZGYwZGM4M2UxMWQzNWU5Y2E4ZGI3NTJmZWE5NzA4ZmYxNWNkYzAzOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGQxYmU4NWYyOWVmYmNkYTNiY2U2OTIwMjA3MjJmZTJmN2I2MjY0MTM1Njc4ZmI0OTEyODJiMDZhMGRkZjVmYyJ9"
+        },
+        {
+          "resource": "repo://docs/assembly-line/2026-08-24-workflow-verification/plan.md#L35-L45",
+          "version": "repo-lines-v1:sha256:8df0c3afde058f2d4b314b4e682657187ad9841ff5620587879f459959ba03fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1NTkzYWQzNDQxY2IzNjE3ZjdhNzE3YmE3YjVjMjU3MDNjMzg3ZGE1ZGVmN2I5OTgzODcxM2EzODU5OWZlZDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0ZDg5YmVjYjZhN2MyNWM1YWE5OTU4ODc0OWJiMmVhNTY0ODU0N2Y0YWQ3MWQ5Y2M5YTJmM2YwMmIwYmMyNzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5NzJkYzgzZmMyNGVkMGQ1MTk2MTM3OWM3OWQ0Mzc3NzU1MzFmZjBmN2M0M2ZlYjQzNjk3MTY4ODBlYzQzNDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bd9813ea486a423cb1ecee9bce5b1c8a",
+      "statement": "The workflow does not verify signatures, SBOMs, or reproducible builds for any addon or base image; it only records resolved versions and digests in image labels.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L103-L112",
+          "version": "repo-lines-v1:sha256:a45b1be2b3050b7f175004509da993dc32830159150c891aaed73b9d01b53000:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkYTdlNGJiNDk1ZTlkYjk0OTcyMmU5OWE5MDdjYzc1OTc2NjNhNzRkODVjOTU1YjEwZTk2MTAyYTA4OTFlZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI5ODM1NjAwZjViY2U2ZGJjNWFjZDk0ZWMxN2UyNGY1YmMyMjBmMDM5OTRjM2Y5YzY0OTEyMDc3ZWYxMjFiMDgifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L345-L352",
+          "version": "repo-lines-v1:sha256:4f51cd1fb7b89cc517efabce68f0f2e969b846b7e349df86c2cc931682e34f6d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmY1NTk3OWNlNzMwMjAzM2U2YjJmZDdkODhmNTM3YTNiOGUwOTFlYTMwNWM4MTFmZmExMjc0YmY1NzY0ZWE1ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzNhMmFmMTNiMGJiZGZkM2VlNjJhMGExNWQ1YjhhNjc1MmVmYWExOGUzNWE4YzE2M2EzMDNiODcwODMzNjlmZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGFjZDliNjMxMGYyZGI3NTlhMTJkMmM2MDJlNWVkMTA5NjAwZDM3NTdmYmZlYWMyOTYwNWEwYzcxZmEyNmNkZSJ9"
+        },
+        {
+          "resource": "repo://README.md#L180-L185",
+          "version": "repo-lines-v1:sha256:21190ac0c75ca775c04b08de5c15d5ae71793b36a02fc4cc1ecaf366cc45346d:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGM5ZDllYjc0ZDcwMzg5YTg0NmIwNTc1NjE4OTdlZTdkOWQ1ZTk0Y2JmZGY5Y2VmODg3M2NiNTRmMGEyYzM5NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDJlNTUzMmE0YTU4YTliZDc4Nzk0YWE5NzdkYjFlZGU1MDA4OGNkZmQ5MzdjNTJkYzFjY2VlOGQ0MDZiYzdhZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDY4NjYzNzFiZDUzYzc3MjAzZDgwNzdiMDNiNGJlMTIyMWYzYTU1ZTg5OGIyMDY4YmNkYTA5M2QzYjhmZTA1NiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4ddd5fba87994bf8a50e1664ed27e5f9",
+      "statement": "Contributors are expected to run three static checks locally: YAML parse, shellcheck on modified run blocks, and branch trace against both caddy_tag shapes (semver and latest).",
+      "evidence": [
+        {
+          "resource": "repo://docs/assembly-line/2026-08-24-workflow-verification/plan.md#L85-L95",
+          "version": "repo-lines-v1:sha256:f749b387fbb991d20dc5f0b67bc017b94f07a2339ed6ce7f9b556259e887a0ac:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5ZGJmMTQ2MzM2OTFiZjg4MWM3YWMzMTBjYTQ2ODMyNjc3NzA3NzcxMTY2YjQ4YzNmMjFjYTNmNjY4ZTk5NDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwOTExMmY3NTg0MGY5ZGRiYWE3ODYzOGY4MzdlYjU3YmVlZDk2MjEzNTY3MzBkMzk5MzFmN2Y3MzhkZjE2OGIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3bb6c6d678be49cc9b5db6b2064d48c0",
+      "statement": "The Lint workflows CI job runs actionlint on every pull request touching .github/workflows/**, covering unknown context properties, invalid expressions, undefined step outputs, and shellcheck on all run blocks.",
+      "evidence": [
+        {
+          "resource": "repo://docs/assembly-line/2026-08-24-workflow-verification/plan.md#L85-L95",
+          "version": "repo-lines-v1:sha256:f749b387fbb991d20dc5f0b67bc017b94f07a2339ed6ce7f9b556259e887a0ac:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE5ZGJmMTQ2MzM2OTFiZjg4MWM3YWMzMTBjYTQ2ODMyNjc3NzA3NzcxMTY2YjQ4YzNmMjFjYTNmNjY4ZTk5NDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwOTExMmY3NTg0MGY5ZGRiYWE3ODYzOGY4MzdlYjU3YmVlZDk2MjEzNTY3MzBkMzk5MzFmN2Y3MzhkZjE2OGIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f84fc1023ed64d1c9a6b9578d86d5dac",
+      "statement": "A tag assertion step runs on pull requests when do_build is true, reading docker/metadata-action's tag output and failing unless the produced tag set exactly matches the expected set for the caddy_tag value.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build_cloudflare-modules.yaml#L572-L605",
+          "version": "repo-lines-v1:sha256:65038fa421951fbeb80997701eeae38966efdb775860f84888edac8c3f41b2ac:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmZjYzM2I0YTE5ZTUxYWIzNjQ0Y2EyZGNiODgwNmM3MGI4MmQ0NzU0MTg4N2Q4ZjU1MjNmNzZiZWYwMjUzMTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxNDM2NGQ3YjJkOWFlNjYzYWVjMDBiYTBiYTNmNzM4MmM5MDBhOWUzNDM2NTQ1MjFjOGZmN2I3MTMwYTBkOGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ4MWI3NjA4MjVkNjUxN2MwZGRjYmNhMjU4YTYwNDFmNTUxM2Y4MDVhNTkyNzA3MjcyNWViODFkMzU0ODczYWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI4NDEyYzZkMWM3MGUxMTUxOGFhYzkyNmZjZjMzZTJlOGY0M2Y5MzU0MjAwNThlZmZiZWE2NDY1NDZiNDhjYmIifQ"
+        },
+        {
+          "resource": "repo://docs/assembly-line/2026-08-24-workflow-verification/plan.md#L55-L70",
+          "version": "repo-lines-v1:sha256:df4cbd5c37d87c7e377c2d2d2af9db96f68e124f52624ef37e95cdc6e93e429b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2NmM1YzMxZjQyM2JkNTg3MzJlZWIwMjhmZDhmMTg5MmQxMjNjODA4MmI2MjI3MDEzMDMyOTQ2YWQ4YzU4YTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0OTM2MDlkODJjNzM0NzJjMTYxYmRjNDkxZDgxOTQxYWI5MzlhY2I2ZWJkOWJkZjEzZmMxM2M2ZDhmOTkzOWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1YmE1MDM2OWQ4MzQ1NGZhMzlmZDgyMjE2NzNiYzcyMWMyZjUyM2VkYWI0ZjYxN2Y1MTVlZTNjMDYwMjg1NTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8136a3c98c874e938d56207319b0f042",
+      "statement": "The repository evaluated act for local Actions execution and rejected it because the decide step requires network access (crane and GitHub API), act cannot reproduce multi-arch push or crane copy, and a local act run would only prove YAML parsing and shell execution already covered by shellcheck and the tag assertion.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L115-L135",
+          "version": "repo-lines-v1:sha256:5665283ae47bf4bc2667fa23262c9d60f1bc287928d69ddeba478a0468384400:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM5NjFiOWM3Mzk5MWI2MzdjYmQ5OWI2N2UxNDdjNjM4YzcxYWM4MGI2OTZhZjQ5MzUyYmYwZTM4YWIzYzJiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiY2VkNGEwZjM5NmE0ODM4NmUyMjRkNzc5ZWQ3NGEzNTliNzI2ZjY0OTUyZTJhNGEwNWM4N2I3MzEzMWE3YzIifQ"
+        },
+        {
+          "resource": "repo://docs/assembly-line/2026-08-24-workflow-verification/plan.md#L51-L65",
+          "version": "repo-lines-v1:sha256:e7732c5df2f8eb1ea64de541510f3c3888395cc7e7ef9bb332ea021727d3bc61:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlMzg4MDM5ZmNjNTUwMTM5YTgzMmQ3ZTA2YzcxNmMyMTdmZTM4MGM5M2EyMzBhZTQ4YzExYWVmN2Q3ODgzMmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwODA3N2Q0N2YwMDFkNmM1MmFiZTE4MmRiNDM5ZWUyNTBjYTBlYzQ1NGJhYTg0NmRkYmY2MGJlZWY3ZTJiZGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0NzY0OTg2Njc1NWVhZGI2ODRjMjRlODFmMTYwZjVlODBkMTNhNGVmZDhiNDBmYWE4ZjRmYWQ1MjZjMGI1ZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU4ODgxNDY4ODlkYmZmMWUxZWZiNWJjYjVmZjlhY2RkNmM3NGM3OTE4ODA4N2Y1MzgzMzc1YzFjYzdjMzdkMGEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-26T14:51:28.771Z"
+  }
+}

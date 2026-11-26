@@ -11,245 +11,379 @@ openwiki:
   test_paths: []
   invariants: [Build runs only when upstream changes or local inputs change, All addon versions fetched from GitHub API at build time, OCI labels enable change detection across runs]
   validation_commands: [gh workflow run build_cloudflare-modules.yaml --ref main]
+verified:
+  - by: openwiki/0.9.0
+    at: 2026-11-26T14:51:28.771Z
+sources:
+  - id: openwiki-source-3cea697c8dad20efcc356a29
+    resource: repo://.github/workflows/build_cloudflare-modules.yaml
+generated: { by: "openwiki/0.9.0", at: "2026-11-26T14:51:28.771Z" }
 ---
 
 # Build Pipeline Workflow
 
 ## Workflow File
-`.github/workflows/build_cloudflare-modules.yaml` (649 lines)
+`.github/workflows/build_cloudflare-modules.yaml` (706 lines)
 
 ## Trigger Conditions
 
-| Trigger | Condition | Behavior |
-|---------|-----------|----------|
-| **Push to main** | Files changed: `Dockerfile-cloudflare`, `.dockerignore`, workflow file | Builds and publishes |
-| **Pull Request** | Same files as push | Validation build (no push) |
-| **Schedule** | Daily 03:00 UTC (`0 3 * * *`) | Checks upstream, builds if changed |
-| **Manual** | `workflow_dispatch` with optional `force=true` | Builds regardless of changes |
+The workflow responds to four distinct trigger types, each with specific path filtering to prevent rebuilds for documentation-only changes.
 
-**Path filtering** prevents rebuilds for documentation-only changes (README.md, etc.).
+| Trigger | Event | Paths Filter | Behavior |
+|---------|-------|--------------|----------|
+| **Push to `main`** | `push` | `Dockerfile-cloudflare`, `.dockerignore`, `.github/workflows/build_cloudflare-modules.yaml` | Full build + publish to GHCR + optional Docker Hub mirror |
+| **Pull Request** | `pull_request` (targeting `main`) | Same as push | Validation build only (multi-arch `linux/amd64`); no push to any registry |
+| **Schedule** | `schedule` (cron `0 3 * * *`) | N/A — no path filter | Daily 03:00 UTC upstream check; builds only if Caddy base or any addon changed |
+| **Manual** | `workflow_dispatch` | N/A | Optional `force=true` input; builds regardless of upstream state |
+
+**Path filtering rationale**: Only changes to the Dockerfile, `.dockerignore`, or the workflow file itself affect the produced image. Documentation, tests, and other repository files are excluded via `paths:` on `push` and `pull_request` triggers.
+
+---
 
 ## Job: `build`
 
-Runs on `ubuntu-latest` with concurrency group `${{ github.workflow }}-${{ github.ref }}` (cancels in-progress runs on same ref).
+Runs on `ubuntu-latest` with concurrency group `${{ github.workflow }}-${{ github.ref }}` (`cancel-in-progress: true`). This cancels any in-progress run on the same ref (branch or PR), preventing queue buildup.
 
 ### Step 1: Classify Local Changes (`local_changes`)
 
-Determines what changed in the push/PR:
+Determines whether the triggering event modified files that affect the image build. Uses `git diff` between appropriate SHAs:
+
+| Event | Compare From | Compare To |
+|-------|--------------|------------|
+| Pull Request | `github.event.pull_request.base.sha` | `github.event.pull_request.head.sha` |
+| Push | `github.event.before` | `github.sha` |
 
 ```bash
-# Compares base vs head SHA for PR, or before vs current SHA for push
+# Core logic (simplified)
 changed_files="$(git diff --name-only "$compare_from" "$compare_to")"
-
-image_inputs_changed=false
-workflow_changed=false
 
 # Dockerfile* or .dockerignore changed
 printf '%s\n' "$changed_files" | grep -Eq '^(Dockerfile[^/]*|\.dockerignore)$'
+# → sets image_inputs_changed=true
 
 # Workflow file itself changed
 printf '%s\n' "$changed_files" | grep -Fxq ".github/workflows/build_cloudflare-modules.yaml"
+# → sets workflow_changed=true
 ```
 
-Outputs:
-- `image_inputs_changed` - Dockerfile or .dockerignore modified
-- `workflow_changed` - Workflow file modified
+**Outputs**:
+- `image_inputs_changed` — `true` if `Dockerfile-cloudflare` or `.dockerignore` modified
+- `workflow_changed` — `true` if the workflow file modified
+
+These outputs feed directly into the **forced build** logic in the `decide` step.
+
+---
 
 ### Step 2: Setup (QEMU, Buildx, GHCR Login)
 
-Standard Docker Buildx setup with QEMU for multi-arch. GHCR login uses `GITHUB_TOKEN` (built-in, no secrets needed).
+Standard Docker Buildx multi-arch setup:
+- `docker/setup-qemu-action@v4` — QEMU for cross-platform emulation
+- `docker/setup-buildx-action@v4` — Buildx builder instance
+- `docker/login-action@v4` — GHCR login using `GITHUB_TOKEN` (no secrets required; built-in token has `packages:write` via workflow permissions)
 
-### Step 3: Decide Whether to Build (`decide`)
+---
 
-**This is the core logic step** - a 400+ line bash script that:
+### Step 3: Decide Whether to Build (`decide`) — Core Logic
 
-1. **Fetches current upstream state**:
-   - `crane digest caddy:latest` → base image digest
-   - `crane config caddy:latest` → base image labels (extracts Caddy version)
-   - For each addon from Dockerfile: GitHub API `/repos/{owner}/{repo}/releases` → latest stable version + release notes
+This ~400-line bash script is the heart of the pipeline. It performs **dynamic upstream version discovery**, **cross-run change detection via OCI labels**, and **build decision logic**.
 
-2. **Reads published image metadata** (if exists):
-   - `crane config ghcr.io/smoochy/caddy-cloudflare-modules:latest`
-   - Extracts: `org.opencontainers.image.base.digest`, `org.opencontainers.image.base.version`, `org.opencontainers.image.addon.N.version`
+#### 3.1 Fetch Current Upstream State
 
-3. **Compares and decides**:
-   ```
-   FORCED = true if:
-     - workflow_dispatch with force=true
-     - PR with image_inputs_changed OR workflow_changed
-     - Push with image_inputs_changed
+| Source | Method | Extracted Data |
+|--------|--------|----------------|
+| Caddy base image | `crane digest caddy:latest` | Base image digest (`sha256:...`) |
+| Caddy base image | `crane config caddy:latest` | Labels → `org.opencontainers.image.version` (Caddy semantic version) |
+| Each addon | GitHub API `GET /repos/{owner}/{repo}/releases?per_page=10` | Latest stable release tag, release notes, release URL |
+| Fallback: tags | GitHub API `GET /repos/{owner}/{repo}/tags` | Latest tag if no stable release |
+| Fallback: commits | GitHub API `GET /repos/{owner}/{repo}/commits/{default_branch}` | Latest commit SHA (7 chars) + commit message |
 
-   CHANGED = true if:
-     - No current image exists (first build)
-     - Caddy base digest changed
-     - Any addon version changed (compared via OCI labels)
-
-   do_build = FORCED OR CHANGED
-   ```
-
-4. **Generates build reason list** for job summary:
-   - "Repository push changed local image inputs"
-   - "caddy:latest base changed: `sha256:abc1234` -> `sha256:def5678`"
-<!-- openwiki: broken internal link [...] file "..." does not exist. Fix the href or restore the target, then delete this comment. -->
-   - "Cloudflare module updated: `v1.2.3` -> `v1.2.4` ([release notes](...))"
-   - "No upstream changes detected (caddy/cloudflare unchanged)"
-
-5. **Outputs** (key ones):
-   - `do_build` - "true"/"false"
-   - `caddy_tag` - e.g., "2.8.4" or "latest"
-   - `caddy_digest` - e.g., "sha256:abc123..."
-   - `cloudflare_version` - Cloudflare DNS module version
-   - `addon_N_name`, `addon_N_version`, `addon_N_url`, `addon_N_notes` - for each discovered addon
-   - `addon_count` - number of addons
-   - `caddy_release_notes` - escaped release notes from Caddy release
-
-### Step 4: Metadata (`meta`)
-
-Uses `docker/metadata-action@v6` to generate tags:
-- `type=raw,value=latest`
-- `type=raw,value=caddy-${{ steps.decide.outputs.caddy_tag }}`
-
-### Step 5: Prepare Addon Labels (`addon_labels`)
-
-Dynamically generates OCI labels for **all discovered addons** (not hardcoded):
+**Addon discovery**: The workflow parses `Dockerfile-cloudflare` at runtime for all `--with` arguments (excluding commented lines):
 
 ```bash
-for i in $(seq 0 $((addon_count - 1))); do
-  name=$(grep "^addon_${i}_name=" "$GITHUB_OUTPUT" | cut -d= -f2-)
-  version=$(grep "^addon_${i}_version=" "$GITHUB_OUTPUT" | cut -d= -f2-)
-  labels+="org.opencontainers.image.addon.${i}.name=${name}\n"
-  labels+="org.opencontainers.image.addon.${i}.version=${version}\n"
+grep -- '--with' Dockerfile-cloudflare | while IFS= read -r line; do
+  [[ "$line" =~ ^[[:space:]]*# ]] && continue
+  [[ "$line" =~ --with[[:space:]]+([^[:space:]\\]+) ]]
+  addon="${BASH_REMATCH[1]}"   # e.g., github.com/caddy-dns/cloudflare
+  ADDONS+=("$addon")
 done
 ```
 
-Labels produced:
-- `org.opencontainers.image.addon.0.name=github.com/caddy-dns/cloudflare`
-- `org.opencontainers.image.addon.0.version=v1.2.3`
-- `org.opencontainers.image.addon.1.name=github.com/WeidiDeng/caddy-cloudflare-ip`
-- ...etc.
+**Go major version handling**: Path suffixes like `/v2`, `/v3` are stripped for GitHub API calls (they are part of the Go module path, not the GitHub repo path).
 
-Also adds base image labels:
+#### 3.2 Read Published Image Metadata (if exists)
+
+Uses `crane config ghcr.io/smoochy/caddy-cloudflare-modules:latest` to extract stored OCI labels:
+
+| Label | Purpose |
+|-------|---------|
+| `org.opencontainers.image.base.digest` | Previously built base image digest |
+| `org.opencontainers.image.base.version` | Previously built Caddy version |
+| `org.opencontainers.image.addon.N.version` | Previously built version of addon N (indexed by discovery order) |
+| `org.opencontainers.image.cloudflare.version` | Legacy label for Cloudflare DNS module (addon 0) |
+
+#### 3.3 Build Decision Algorithm
+
+```
+FORCED = true if:
+  ├─ workflow_dispatch with force=true
+  ├─ pull_request AND (image_inputs_changed OR workflow_changed)
+  └─ push AND image_inputs_changed
+
+CHANGED = true if:
+  ├─ No current image exists (first build ever)
+  ├─ Caddy base digest changed (current vs stored org.opencontainers.image.base.digest)
+  └─ Any addon version changed (GitHub API version vs stored org.opencontainers.image.addon.N.version)
+
+do_build = FORCED OR CHANGED
+```
+
+#### 3.4 Build Reason Generation
+
+The step produces a human-readable reason list for the job summary:
+
+| Reason Category | Example Output |
+|-----------------|----------------|
+| Forced: local input change | `Repository push changed local image inputs` |
+| Forced: workflow change | `Workflow changed, but no image input changed; publish skipped unless upstream changed` |
+| Forced: PR validation | `Pull request validation for local image input changes` |
+| Forced: manual trigger | `Manual trigger (forced build)` |
+| Upstream: base changed | `caddy:latest base changed: sha256:abc1234 -> sha256:def5678` |
+| Upstream: addon changed | `Cloudflare module updated: v1.2.3 -> v1.2.4 ([release notes](...))` |
+| No changes | `No upstream changes detected (caddy/cloudflare unchanged)` |
+
+#### 3.5 Key Outputs
+
+| Output | Description |
+|--------|-------------|
+| `do_build` | `"true"` or `"false"` — gates all downstream steps |
+| `caddy_tag` | Semantic version (e.g., `2.8.4`) or `latest` |
+| `caddy_digest` | Full digest `sha256:...` |
+| `caddy_release_notes` | Escaped release body from GitHub |
+| `addon_count` | Number of discovered addons |
+| `addon_N_name` | Full module path (e.g., `github.com/caddy-dns/cloudflare`) |
+| `addon_N_version` | Resolved version string |
+| `addon_N_url` | Release/tag/commit URL |
+| `addon_N_notes` | Escaped release notes |
+| `addon_N_label_name` | `org.opencontainers.image.addon.N.name=...` |
+| `addon_N_label_version` | `org.opencontainers.image.addon.N.version=...` |
+| `current_*` | Mirror of stored labels for debugging |
+
+---
+
+### Step 4: Metadata (`meta`)
+
+Runs **only if `do_build == 'true'`**. Uses `docker/metadata-action@v6` to generate tags and base labels:
+
+```yaml
+tags: |
+  type=raw,value=latest
+  type=raw,value=caddy-${{ steps.decide.outputs.caddy_tag }}
+  type=raw,value=caddy-v${{ steps.decide.outputs.caddy_tag }},enable=${{ steps.decide.outputs.caddy_tag != 'latest' }}
+```
+
+Produces:
+- `latest` — always
+- `caddy-<ver>` — e.g., `caddy-2.8.4`
+- `caddy-v<ver>` — only when version is semver (not `latest`)
+
+---
+
+### Step 5: Assert Produced Tag Set (PR Validation)
+
+**New step added for PR validation**. Runs **only on pull requests when `do_build == 'true'`**. Validates that `metadata-action` produced exactly the expected tag set for the given Caddy version:
+
+| Caddy Tag | Expected Tags |
+|-----------|---------------|
+| `latest` | `latest`, `caddy-latest` |
+| Semver (e.g., `2.8.4`) | `latest`, `caddy-2.8.4`, `caddy-v2.8.4` |
+
+```bash
+# Validation logic (simplified)
+expected=(latest caddy-2.8.4 caddy-v2.8.4)
+produced=(tags from meta.outputs.tags)
+# Fails if sets don't match exactly
+```
+
+**Purpose**: Catches regressions in tag generation logic during PR validation before any image is pushed.
+
+---
+
+### Step 6: Prepare Addon Labels (`addon_labels`)
+
+Runs **only if `do_build == 'true'`**. Dynamically constructs OCI label strings for **all discovered addons** (no hardcoded count):
+
+```bash
+for i in $(seq 0 $((addon_count - 1))); do
+  name="$(grep "^addon_${i}_name=" "$GITHUB_OUTPUT" | cut -d= -f2-)"
+  version="$(grep "^addon_${i}_version=" "$GITHUB_OUTPUT" | cut -d= -f2-)"
+  labels+="org.opencontainers.image.addon.${i}.name=${name}\n"
+  labels+="org.opencontainers.image.addon.${i}.version=${version:-unknown}\n"
+done
+```
+
+Outputs multiline `labels` string consumed by `build-push-action`.
+
+---
+
+### Step 7: Build and Push (`build-push-action@v7`)
+
+Runs **only if `do_build == 'true'`**. Multi-arch build with full label injection:
+
+| Parameter | Value |
+|-----------|-------|
+| Context | `.` |
+| Dockerfile | `./Dockerfile-cloudflare` |
+| Platforms | `linux/amd64,linux/arm64,linux/arm/v7` (PR: `linux/amd64` only) |
+| Push | `github.event_name != 'pull_request'` |
+| Tags | `${{ steps.meta.outputs.tags }}` |
+| Labels | Metadata labels + base labels + addon labels + legacy label + custom description |
+| Cache | `type=gha` (push: `mode=max` on non-PR) |
+
+**Injected labels** (complete set):
 - `org.opencontainers.image.base.name=caddy:latest`
 - `org.opencontainers.image.base.tag=<caddy_tag>`
 - `org.opencontainers.image.base.digest=<caddy_digest>`
 - `org.opencontainers.image.base.version=<caddy_tag>`
-- `org.opencontainers.image.cloudflare.version=<cloudflare_version>` (legacy, for backward compat)
+- `org.opencontainers.image.cloudflare.version=<cloudflare_version>` (legacy)
+- `org.opencontainers.image.addon.N.name=<addon_path>`
+- `org.opencontainers.image.addon.N.version=<addon_version>` (for each N)
+- Standard OCI labels (title, description, url, documentation, licenses, source)
 
-### Step 6: Build and Push (`build-push`)
+---
 
-Uses `docker/build-push-action@v7`:
-- Context: `.`
-- File: `./Dockerfile-cloudflare`
-- Platforms: `linux/amd64,linux/arm64,linux/arm/v7`
-- Push: `true` (except for PR)
-- Tags: from `meta` step
-- Labels: from `meta` + `addon_labels` + base labels
-- Cache: GitHub Actions cache (`type=gha`)
+### Step 8: Docker Hub Mirror (Conditional)
 
-### Step 7: Docker Hub Mirror (Conditional)
+Runs **only when all conditions met**:
+1. `do_build == 'true'`
+2. Not a pull request
+3. `dockerhub_enabled == 'true'` (both `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` secrets set)
 
-Only runs if:
-- `do_build == true`
-- Not a PR
-- `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` secrets configured
+Uses `crane copy` for registry-to-registry copy (no local pull):
 
-Uses `crane copy` to mirror both tags:
 ```bash
-crane copy ghcr.io/smoochy/caddy-cloudflare-modules:latest \
-           smoochy84/caddy-cloudflare-modules:latest
-crane copy ghcr.io/smoochy/caddy-cloudflare-modules:caddy-<tag> \
-           smoochy84/caddy-cloudflare-modules:caddy-<tag>
+src_base="ghcr.io/smoochy/caddy-cloudflare-modules"
+dst_base="${DOCKERHUB_IMAGE}"   # e.g., smoochy84/caddy-cloudflare-modules
+
+for tag in latest "caddy-${CADDY_TAG}"; do
+  crane copy "${src_base}:${tag}" "${dst_base}:${tag}"
+done
+
+if [ "${CADDY_TAG}" != "latest" ]; then
+  crane copy "${src_base}:caddy-v${CADDY_TAG}" "${dst_base}:caddy-v${CADDY_TAG}"
+fi
 ```
 
-### Step 8: Write Build Summary
+---
 
-Always runs (`if: always()`). Outputs structured markdown to `$GITHUB_STEP_SUMMARY`:
+### Step 9: Write Build Summary
 
-```
-### Publish reason:
-- Repository push changed local image inputs
-- caddy:latest base changed: `sha256:abc1234` -> `sha256:def5678`
+Runs **always** (`if: always()`). Cats pre-rendered `/tmp/summary.md` (generated in `decide` step) to `$GITHUB_STEP_SUMMARY`, then appends image tags and Docker Hub mirror status.
 
-### Selected versions (this run):
-- caddy digest: `sha256:def5678`
-<!-- openwiki: broken internal link [...] file "..." does not exist. Fix the href or restore the target, then delete this comment. -->
-- caddy: `2.8.4` ([GitHub tag](...))
-
-### Addons:
-<!-- openwiki: broken internal link [...] file "..." does not exist. Fix the href or restore the target, then delete this comment. -->
-- github.com/caddy-dns/cloudflare: `v1.2.3` ([release](...))
-<!-- openwiki: broken internal link [...] file "..." does not exist. Fix the href or restore the target, then delete this comment. -->
-- github.com/WeidiDeng/caddy-cloudflare-ip: `v0.1.0` ([repo](...))
-
-### Changelogs
-<details><summary>caddy <code>2.8.4</code></summary>
-> Release notes...
-</details>
-<details><summary>github.com/caddy-dns/cloudflare <code>v1.2.3</code></summary>
-> Release notes...
-</details>
-
-### Image Tags
-- `ghcr.io/smoochy/caddy-cloudflare-modules:latest`
-- `ghcr.io/smoochy/caddy-cloudflare-modules:caddy-2.8.4`
-
-### Docker Hub Mirror
-- `smoochy84/caddy-cloudflare-modules:latest`
-- `smoochy84/caddy-cloudflare-modules:caddy-2.8.4`
-```
+---
 
 ## Change Detection Deep Dive
 
-### What Triggers a Build
+### Comparison Matrix
 
-| Source | Detection Method | Label Key |
-|--------|------------------|-----------|
-| Caddy base image | `crane digest` comparison | `org.opencontainers.image.base.digest` |
-| Caddy version | Label comparison | `org.opencontainers.image.base.version` |
-| Cloudflare DNS module | GitHub API release version | `org.opencontainers.image.addon.0.version` |
-| Cloudflare IP module | GitHub API release version | `org.opencontainers.image.addon.1.version` |
-| Combine IP ranges | GitHub API release version | `org.opencontainers.image.addon.2.version` |
-| Docker proxy | GitHub API release version | `org.opencontainers.image.addon.3.version` |
+| Change Type | Detected By | Comparison | Triggers Build |
+|-------------|-------------|------------|----------------|
+| **Local: Dockerfile** | `local_changes` step | `git diff` base→head | `FORCED=true` (push/PR) |
+| **Local: .dockerignore** | `local_changes` step | `git diff` base→head | `FORCED=true` (push/PR) |
+| **Local: Workflow file** | `local_changes` step | `git diff` base→head | `FORCED=true` (push/PR) |
+| **Upstream: Caddy base digest** | `decide` step | `crane digest caddy:latest` vs stored `org.opencontainers.image.base.digest` | `CHANGED=true` |
+| **Upstream: Caddy version label** | `decide` step | Extracted from `crane config` vs stored `org.opencontainers.image.base.version` | Informational (digest is authoritative) |
+| **Upstream: Addon version** | `decide` step | GitHub API latest release/tag vs stored `org.opencontainers.image.addon.N.version` | `CHANGED=true` |
+| **First build ever** | `decide` step | `crane manifest` returns 404 | `CHANGED=true` |
+| **Manual force** | `workflow_dispatch` input | `inputs.force == 'true'` | `FORCED=true` |
 
-### Forced Builds
-
-| Scenario | Force Condition |
-|----------|-----------------|
-| Manual run with `force=true` | Always builds |
-| PR with Dockerfile change | Builds (validation) |
-| PR with workflow change | Builds (validation) |
-| Push with Dockerfile change | Builds + publishes |
-| Push with workflow change only | **Does not publish** unless upstream changed |
-
-### First Build
-
-If no published image exists (`crane manifest` fails), `CHANGED=true` → builds.
-
-## Adding a New Addon
-
-1. Add `--with github.com/owner/repo` to `Dockerfile-cloudflare`
-2. Workflow automatically:
-   - Discovers it via `grep -- '--with'`
-   - Fetches version from GitHub API
-   - Adds OCI labels
-   - Includes in job summary and changelog
-   - Tracks for future change detection
-
-No workflow changes needed.
-
-## Validation Commands
+### Validation Commands
 
 ```bash
-# Trigger manual build (with force)
-gh workflow run build_cloudflare-modules.yaml --ref main -f force=true
+# Check current base image digest
+crane digest caddy:latest
 
-# View latest run summary
-gh run list --workflow=build_cloudflare-modules.yaml --limit=1
-gh run view --log-failed
+# Check current base image labels (includes version)
+crane config caddy:latest | jq '.config.Labels'
 
-# Check published image labels
+# Check published image labels (for comparison)
 crane config ghcr.io/smoochy/caddy-cloudflare-modules:latest | jq '.config.Labels'
 
-# Verify multi-arch manifest
-crane manifest ghcr.io/smoochy/caddy-cloudflare-modules:latest
+# Check specific addon version in published image
+crane config ghcr.io/smoochy/caddy-cloudflare-modules:latest | \
+  jq '.config.Labels["org.opencontainers.image.addon.0.version"]'
+
+# Trigger manual build with force
+gh workflow run build_cloudflare-modules.yaml --ref main -f force=true
+
+# Trigger manual build without force (respects change detection)
+gh workflow run build_cloudflare-modules.yaml --ref main
 ```
+
+---
+
+## Publishing Flow Diagram
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant GH as GitHub Actions
+    participant CR as crane
+    participant GHAPI as GitHub API
+    participant DX as Docker Buildx
+    participant GHCR as ghcr.io
+    participant DH as Docker Hub
+
+    Note over GH: Trigger (push/PR/schedule/manual)
+    GH->>GH: Classify local changes (local_changes)
+    GH->>CR: crane digest caddy:latest
+    CR-->>GH: base digest
+    GH->>CR: crane config caddy:latest
+    CR-->>GH: base config (labels with version)
+    GH->>GH: Parse Dockerfile --with lines
+    loop For each addon
+        GH->>GHAPI: GET /repos/{owner}/{repo}/releases
+        GHAPI-->>GH: Latest release/tag/commit
+        GH->>GHAPI: GET /repos/{owner}/{repo}/releases/tags/{tag} (notes)
+        GHAPI-->>GH: Release body
+    end
+    GH->>CR: crane config ghcr.io/...:latest (if exists)
+    CR-->>GH: Current image config (OCI labels)
+    GH->>GH: Compare versions (decide step)
+    alt do_build == true
+        GH->>GH: Generate tags (meta) + addon labels (addon_labels)
+        GH->>DX: build-push-action (multi-arch)
+        DX->>GHCR: Push manifests + layers with labels
+        opt Docker Hub enabled
+            GH->>DH: crane copy ghcr.io/... -> docker.io/...
+        end
+    else
+        GH->>GH: Skip build, write "no changes" summary
+    end
+    GH->>GH: Write job summary (versions, changelogs, tags)
+```
+
+---
+
+## Key Design Invariants
+
+| Invariant | Enforced By |
+|-----------|-------------|
+| Build runs only when upstream changes or local inputs change | `decide` step logic (`FORCED OR CHANGED`) |
+| All addon versions fetched from GitHub API at build time | `decide` step dynamic parsing + API calls |
+| OCI labels enable change detection across runs | `org.opencontainers.image.base.digest`, `org.opencontainers.image.addon.N.version` |
+| Commented `--with` lines ignored in both Dockerfile and workflow | Dockerfile `#` comments + workflow `grep` parser skip |
+| PR validation never pushes to any registry | `push: ${{ github.event_name != 'pull_request' }}` |
+| Concurrency cancels in-progress runs on same ref | `concurrency` group with `cancel-in-progress: true` |
+| Every build publishes `latest` + `caddy-<ver>` tags | `metadata-action` tag config |
+| Docker Hub mirror only when secrets configured | `registries` step condition |
+| Tag assertion validates PR metadata output | `Assert produced tag set` step |
+
+---
+
+## Related Pages
+
+- [Architecture Overview](../architecture/overview.md) — System context and component relationships
+- [Dockerfile Reference](../operations/dockerfile.md) — Multi-stage build, xcaddy, addon declaration
+- [Image Tags & Publishing](../operations/image-tags.md) — Tag strategy, OCI labels, mirror flow
+- [Docker Hub Sync](../operations/dockerhub-sync.md) — Docker Hub description sync workflow
+- [Quickstart](../quickstart.md) — Getting started with the images
